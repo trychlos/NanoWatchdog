@@ -1,0 +1,11 @@
+[Unit]
+Description=NanoWatchdog management daemon
+After=local-fs.target network-online.target
+Requires=local-fs.target network-online.target
+
+[Service]
+ExecStart=/opt/trychlos.pwi/nanowatchdog/nw-daemon.pl -nohelp
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
