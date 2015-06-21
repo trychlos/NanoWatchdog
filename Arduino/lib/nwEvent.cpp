@@ -56,8 +56,11 @@ void nwEvent::setup()
 {
 	/* set version to current version string */
     memset(( void * ) _version, '\0', sizeof( _version ));
-    for( int i=0 ; nwVersionString[i] ; ++i ){
-        _version[i] = nwVersionString[i];
+    for( int i=0 ;; ++i ){
+        _version[i] = pgm_read_byte_near( nwVersionString+i );
+        if( _version[i] == '\0' ){
+        	break;
+        }
     }
     /* set event time to now */
     _time = now();
@@ -118,17 +121,19 @@ void nwEvent::writeToEEPROM( int adr )
 void nwEvent::display( const char *prefix )
 {
     Serial.print( prefix );
-    Serial.print( "version:      " );
+    Serial.print( F( "version:      " ));
     Serial.println( _version );
     Serial.print( prefix );
-    Serial.print( "date:         " );
+    Serial.print( F( "date:         " ));
     Serial.println( nwDateTimeString( _time ));
-    Serial.print( "reason:       " );
+    Serial.print( prefix );
+    Serial.print( F( "reason:       " ));
     Serial.print( _reason );
-    Serial.print( "(" );
+    Serial.print( " (" );
     Serial.print( nwReasonString( _reason ));
-    Serial.print( ")" );
-    Serial.print( "acknowledged: " );
+    Serial.println( ")" );
+    Serial.print( prefix );
+    Serial.print( F( "acknowledged: " ));
     Serial.println( _ack ? "yes":"no" );
 }
 

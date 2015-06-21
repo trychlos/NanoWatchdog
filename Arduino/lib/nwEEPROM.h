@@ -33,12 +33,12 @@
  * ack_reason holds:
  * - the acknowledgment boolean in b7
  * - the reason code in b6..b0 which actually limits the reason codes
- *   to 63.
+ *   to 127.
  */
 struct nwEventStr {
-    char   version[nwVersionSize];
-    time_t time;
-    byte   ack_reason;
+    char   version[nwVersionSize];		/* 32 */
+    time_t time;						/*  4 */
+    byte   ack_reason;					/*  1 */
 };
 
 static const int nwEventStrSize = sizeof( nwEventStr );

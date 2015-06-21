@@ -30,15 +30,26 @@
 #include <EEPROM.h>
 #include <Time.h>
 
+/* an helper macro to get access to strings stored in Flash memory */
+#define FS(x) (( __FlashStringHelper * )( x ))
+
 /* max size of the version string, including null terminator */
 static const int nwVersionSize = 32;
 /*                                             0        1         2         3  */
 /*                                             1234567890123456789012345678901 */
 static const PROGMEM char nwVersionString[] = "NanoWatchdog 2015.1";
 
+#define LED_BLINK	300					/* elapsed milliseconds on/off for a led blink */
+
+/* blink the specified LED */
+void nwBlinkPin( int pin, int blink=LED_BLINK );
+
 /* a command date formating function
  * display yyyy-mm-dd hh:mi:ss from a time_t value */
 String nwDateTimeString( time_t time );
+
+/* some helping functions for Serial.print */
+void nwSerialPrintVersion();
 
 #include "nwEEPROM.h"
 #include "nwEvent.h"

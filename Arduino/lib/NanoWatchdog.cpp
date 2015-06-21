@@ -25,6 +25,18 @@
 #include "NanoWatchdog.h"
 
 /**
+ * nwBlinkPin:
+ * @pin: the PIN number of the LED.
+ * @blink: the delay in milliseconds; defaults to LED_BLINK.
+ */
+void nwBlinkPin( int pin, int blink )
+{
+    digitalWrite( pin, HIGH );
+    delay( blink );
+    digitalWrite( pin, LOW );
+}
+
+/**
  * nwDateTimeString:
  * @t: a time_t value
  *
@@ -59,4 +71,15 @@ String nwDateTimeString( time_t t )
     str += " UTC";
    
     return( str );
+}
+
+/**
+ * nwOutputTitle:
+ * @title: the title to send to Serial.println
+ */
+void nwSerialPrintVersion()
+{
+	Serial.print( "[" );
+	Serial.print( FS( nwVersionString ));
+	Serial.print( "] - " );
 }

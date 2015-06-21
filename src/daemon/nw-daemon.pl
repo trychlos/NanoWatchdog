@@ -351,14 +351,14 @@ sub cmdline_get_options( $$ ){
 		foreach my $key ( keys %$_ ){
 			#print "key=$key\n";
 			my $spec = $key;
-			$spec .= %$_{$key}->{'spec'} if defined( %$_{$key}->{'spec'} );
+			$spec .= $_->{$key}{'spec'} if defined( $_->{$key}{'spec'} );
 			#print "spec=$spec\n";
 			push @temp_specs, $spec;
 			#$local_opts->{$key} = {};
-			if( defined( %$_{$key}->{'value'} )){
-				$local_opts->{$key}{'value'} = %$_{$key}->{'value'};
-			} elsif( defined( %$_{$key}->{'def'} )){
-				$local_opts->{$key}{'value'} = %$_{$key}->{'def'};
+			if( defined( $_->{$key}{'value'} )){
+				$local_opts->{$key}{'value'} = $_->{$key}{'value'};
+			} elsif( defined( $_->{$key}{'def'} )){
+				$local_opts->{$key}{'value'} = $_->{$key}{'def'};
 			} else {
 				$local_opts->{$key}{'value'} = "";
 			}
@@ -382,8 +382,8 @@ sub cmdline_get_options( $$ ){
 	# lexical for direct access
 	foreach( @$local_specs ){
 		foreach my $key ( keys %$_ ){
-			if( defined( %$_{$key}->{'set'} ) && ref( %$_{$key}->{'set'} ) eq "SCALAR" ){
-				${%$_{$key}->{'set'}} = $local_opts->{$key}{'value'};
+			if( defined( $_->{$key}{'set'} ) && ref( $_->{$key}{'set'} ) eq "SCALAR" ){
+				${$_->{$key}{'set'}} = $local_opts->{$key}{'value'};
 				#print "set frequently used value\n";
 			}
 		}
@@ -464,7 +464,7 @@ sub cmdline_help( $ ){
 				print " ";
 			}
 			print "  ";
-			print %$_{$key}->{'help'} if defined( %$_{$key}->{'help'} );
+			print $_->{$key}{'help'} if defined( $_->{$key}{'help'} );
 			# display default value
 			if( defined( $_->{$key}{'def'} )){
 				print " [".$_->{$key}{'def'}."]";
@@ -587,15 +587,23 @@ sub config_read( $$$$ ){
 		if( !defined( $local_config->{$key} )){
 			# if parameter has a default value
 			if( defined( $local_specs->{$key}{'def'} )){
-				if( ref( $local_specs->{$key}{'def'} ) eq "CODE" ){
-					$local_config->{$key} = 
-							$local_specs->{$key}{'def'}->( $local_config, $local_specs->{$key}{'parms'} );
-				} else {
+				if( ref( $local_specs->{$key}{'def'} ) ne "CODE" ){
 					$local_config->{$key} = $local_specs->{$key}{'def'};
 				}
 			} elsif( defined( $local_specs->{$key}{'opt'} ) && 
 					defined( $local_opts->{$local_specs->{$key}{'opt'}}{'value'} )){
 				$local_config->{$key} = $local_opts->{$local_specs->{$key}{'opt'}}{'value'};
+			}
+		}
+	}
+	foreach my $key ( keys %$local_specs ){
+		if( !defined( $local_config->{$key} )){
+			# if parameter has a default value by code
+			if( defined( $local_specs->{$key}{'def'} )){
+				if( ref( $local_specs->{$key}{'def'} ) eq "CODE" ){
+					$local_config->{$key} = 
+							$local_specs->{$key}{'def'}->( $local_config, $local_specs->{$key}{'parms'} );
+				}
 			} else {
 				msg "warning: no suitable default value found for parm=$key\n";
 				$temp_errs += 1;
@@ -605,13 +613,13 @@ sub config_read( $$$$ ){
 	# last check for min/max values
 	foreach my $key ( keys %$local_specs ){
 		# check for min value
-		if( defined( $local_specs->{$key}{'min'} )){
+		if( defined( $local_specs->{$key}{'min'} ) && $local_config->{$key} != $local_specs->{$key}{'def'} ){
 			if( $local_config->{$key} < $local_specs->{$key}{'min'} && !$local_opts->{'force'}{'value'} ){
 				$local_config->{$key} = $local_specs->{$key}{'min'};
 			}
 		}
 		# check for max value
-		if( defined( $local_specs->{$key}{'max'} )){
+		if( defined( $local_specs->{$key}{'max'} ) && $local_config->{$key} != $local_specs->{$key}{'def'} ){
 			if( $local_config->{$key} > $local_specs->{$key}{'max'} && !$local_opts->{'force'}{'value'} ){
 				$local_config->{$key} = $local_specs->{$key}{'max'};
 			}
@@ -1117,7 +1125,9 @@ sub run_server(){
 	$serial = open_serial() if $opts->{'serial'}{'value'};
 	wait_for_watchdog_init() or die "unable to initialized NanoWatchdog board\n";
 	
-	# check status pre-startup
+	# first start the NanoWatchdog board
+	start_watchdog();
+	# check status
 	$nano_status = send_serial( "STATUS" );
 #	$nano_status =
 #"  version: NanoWatchdog 2015.1
@@ -1127,8 +1137,6 @@ sub run_server(){
 	write_status( $nano_status );
 	send_boot_mail( $nano_status );
 	
-	# last start the NanoWatchdog board
-	start_watchdog();
 	my $tick = 0;
 	my $subtick = $parms->{'interval'};	# do the first check right now
 
