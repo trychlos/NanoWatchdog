@@ -3,7 +3,30 @@
  Summary
  =======
  
+   Version 2015.2
    Version 2015.1
+
+-----------------------------------------------------------------------
+ Version 2015.2
+ ==============
+
+ Release date: 2015-06-29
+
+ NanoWatchdog board:
+
+               - REINIT command is deprecated (todo #18).
+
+ NanoWatchdog management daemon:
+
+               - commands accept leading and trailing spaces.
+               - define HELP command (todo #19).
+               - doesn't check min/max values on unset parameters (todo #16).
+
+ NanoWatchdog as a systemd service:
+
+               - lets create a PID file in /var/run hierarchy.
+
+ PCB:          v5
 
 -----------------------------------------------------------------------
  Version 2015.1
@@ -17,3 +40,5 @@
 
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, june 15th.
+             Last updated on 2015, june 29th.
+ 

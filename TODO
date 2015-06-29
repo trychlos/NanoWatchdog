@@ -25,11 +25,11 @@
                 and configuration parameters may be displayed, while
                 getting rid of serial intput/output traces
 
-  16 2015- 6-21 when a default parameter comes from a function and has
-                min/max values, then min/max checks should test
-                if the parameter is the default value or not
+  20 2015- 6-29 setting a command-line option through management daemon
+                command interface doesn't update corresponding configu-
+                ration parameter (if any)
 
-  17
+  21
 
 -----------------------------------------------------------------------
  DONE
@@ -68,5 +68,21 @@
                 origin of the last reboot 
      2015- 6-17 done
 
+  16 2015- 6-21 when a default parameter comes from a function and has
+                min/max values, then min/max checks should test
+                if the parameter is the default value or not
+     2015- 6-29 done for 2015.2
+
+  17 2015- 6-21 take care of not running the daemon twice
+     2015- 6-29 done for 2015.2
+
+  18 2015- 6-22 Deprecate REINIT command as of 2015.2
+     2015- 6-29 done for 2015.2
+
+  19 2015- 6-24 Add a HELP command to nw-daemon commands
+     2015- 6-29 done for 2015.2
+
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, may 26th.
+             Last updated on 2015, june 29th.
+ 
