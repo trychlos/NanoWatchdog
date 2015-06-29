@@ -55,10 +55,42 @@ sub msg_version;
 sub send_serial;
 sub start_watchdog;
 
-# option specifiers
+# Command-line options definitions
+# ================================
+# There is one and only one rationale: gather in one single place all
+# elements that make a command-line option, so that the maintenance is
+# a lot easier when modifying, defining a new or removing an option:
+#  1/ the option itself
+#  2/ a default value
+#  3/ the specification for standard GetOptions()
+#  4/ a help line to be displayed on user request.
+#
+# This rationale has some consequences:
+#  1/ the definition must be ordered so that the help message is itself
+#     ordered => the definition is an array.
+#  2/ each command-line property is set in a hash whose key is the
+#     option itself.
+#
+# Following keys are known:
+#  'spec'    : the GetOptions() specifications
+#  'def'     : the default value as displayed in the help message
+#  'value'   : the actual default value
+#  'help'    : the help line
+#  'template': an example of the way the option should be entered
+#  'ref'     : a ref to a scalar which will holds the option value
+#
+# The command-line interpretation stops as soon as an error is detected.
+# The result is stored in an hash, as order doesn't matter here.
+# Whether it has been set in the command-line or not, each defined
+# option is set in this hash, and points itself to a hash with the
+# following keys:
+#  'value': the value to be considered for this option, whether it has
+#           been set in the command-line or is the default
+#  'orig' : an origin indicator (default, command-line or command).
+
 my $opt_verbose;						# some frequently used options
 my $opts = {};							# the final options hash
-my $opts_specs = [						# the options spec array
+my $option_specs = [					# the options specification array
 	# standard command-line options
 	{ 'help'		=> { 'spec'		=> '!', 
 						 'def'		=> "no",
@@ -72,7 +104,7 @@ my $opts_specs = [						# the options spec array
 						 'def'		=> "no",
 						 'value'	=> false,
 						 'help'		=> "run verbosely",
-						 'set'		=> \$opt_verbose }},
+						 'ref'		=> \$opt_verbose }},
 	# run behavior
 	{ 'config'		=> { 'spec'		=> '=s',
 						 'template'	=> '=/path/to/filename',
@@ -143,7 +175,7 @@ my $opts_specs = [						# the options spec array
 						 'help'		=> "force the usage of watchdog parameters outside of limits" }},
 ];
 
-my $opts_help = " The daemon recognizes following commands:
+my $option_help_post = " The daemon recognizes following commands:
     DUMP OPTS    dump the command-line options values
     DUMP PARMS   dump the configuration parameters values
     GET <parm>   returns the value of (case-sensitive) parameter or option
@@ -158,9 +190,52 @@ my $opts_help = " The daemon recognizes following commands:
 # origin of option values
 use constant { OPT_DEFAULT => 0, OPT_CMDLINE => 1, OPT_COMMAND => 2 };
 
-# parameter specification for NanoWatchdog
-# nb: no need to specify here a default value if the parameter may be
-# overriden by a command-line option which already has one
+# Configuration parameters definitions
+# ====================================
+# Configuration parameters are defined here.
+# There is no need for an ordered list (an array) as there is no
+# displayed help message. So a hash is enough.
+#
+# Some configuration parameters may be overriden by a command-line
+# option. This is specified below. In this case, the definitive
+# parameter value is set as a parameter, whether its value come from
+# a default value, the configuration file or a command-line option.
+# This behavior let the program be sure that the correct value for
+# each and every configuration parameter will be found in the resulting
+# hash, even if the programmer decides later to overrides one or more
+# with a dedicated command-line option.
+#
+# Following keys are handled:
+#  'def'  : the default value (when parameter is not specified in the
+#           configuration file); this may be a scalar, of a reference
+#           to a subroutine (see 'parms' key), or a reference to an
+#           array; in this later case, the parameter may be specified
+#           several times
+#           Note that it is acceptable to have an 'undef' default value
+#           when no value actually means 'do not even consider this'
+#           parameter'.
+#  'parms': the parameters to be passed to the subroutine which actually
+#           computes the default value
+#  'opt'  : the command-line option whose value overrides the parameter's
+#           one; in this case, the used default value is those of the
+#           named command-line option
+#  'min'  : the minimal allowed value (when specified)
+#  'max'  : the maximal allowed value (when specified)
+#
+# Handling the configuration file doesn't rely of specification ordering
+# here, nor of definition ordering in the configuration file. Instead
+# handling takes care of:
+#  1/ first handling parameters which are overriden in the command-line
+#  2/ then handling parameters which are specified in the configuration
+#     file
+#  2/ then setting fixed default values
+#  3/ only last computing default values for parameters which are not
+#     specified anywhere and have a computed default values.
+#
+# The result is stored as a simple hash { 'parameter' => value },
+# because we do not need at this time from where does come the used
+# value.
+
 my $parms = {};
 my $parm_specs = {
 	# specific to NanoWatchdog
@@ -178,15 +253,13 @@ my $parm_specs = {
 							 'opt'		=> "delay" },
 	'send-mail'			=> { 'def'		=> "never" },
 	'status-file'		=> { 'def'		=> "" },
-	# parameter specification for standard Linux watchdog
-	# not specifying unused parameters as of v2015.1.
 	'interval'			=> { 'min'		=> 5,
 							 'max'		=> 60,
 							 'opt'		=> "interval" },
 	'logtick'			=> { 'def'		=> 1 },
 	# as max-load-5 and max-load-15 rely on max-load-1 value, take care
 	# of having a max-load-1 suitable default
-	'max-load-1'		=> { 'def'		=> 0,
+	'max-load-1'		=> { 'def'		=> undef,
 							 'min'		=> 2 },
 	'max-load-5'		=> { 'def'		=> \&max_load_5_def,
 							 'parms'	=> [ qw/max-load-1/ ],
@@ -381,8 +454,8 @@ sub cmdline_get_options( $$ ){
 	# lexical for direct access
 	foreach( @$local_specs ){
 		foreach my $key ( keys %$_ ){
-			if( defined( $_->{$key}{'set'} ) && ref( $_->{$key}{'set'} ) eq "SCALAR" ){
-				${$_->{$key}{'set'}} = $local_opts->{$key}{'value'};
+			if( defined( $_->{$key}{'ref'} ) && ref( $_->{$key}{'ref'} ) eq "SCALAR" ){
+				${$_->{$key}{'ref'}} = $local_opts->{$key}{'value'};
 				#print "set frequently used value\n";
 			}
 		}
@@ -472,7 +545,7 @@ sub cmdline_help( $ ){
 		}
 	}
 	# help end
-	print "$opts_help
+	print "$option_help_post
 ";
 }
 
@@ -604,23 +677,27 @@ sub config_read( $$$$ ){
 					$local_config->{$key} = 
 							$local_specs->{$key}{'def'}->( $local_config, $local_specs->{$key}{'parms'} );
 				}
-			} else {
-				msg "warning: no suitable default value found for parm=$key\n";
-				$temp_errs += 1;
+			#} else {
+			#	msg "warning: no suitable default value found for parm=$key\n";
+			#	$temp_errs += 1;
 			}
 		}
 	}
 	# last check for min/max values
 	foreach my $key ( keys %$local_specs ){
 		# check for min value
-		if( defined( $local_specs->{$key}{'min'} ) && $local_config->{$key} != $local_specs->{$key}{'def'} ){
+		if( defined( $local_specs->{$key}{'min'} ) && defined( $local_config->{$key} )){
 			if( $local_config->{$key} < $local_specs->{$key}{'min'} && !$local_opts->{'force'}{'value'} ){
+				msg( "$key: value=".$local_config->{$key}." < min=".$local_specs->{$key}{'min'}
+					." and force is not set: forcing the value to min" ) if $opt_verbose;
 				$local_config->{$key} = $local_specs->{$key}{'min'};
 			}
 		}
 		# check for max value
-		if( defined( $local_specs->{$key}{'max'} ) && $local_config->{$key} != $local_specs->{$key}{'def'} ){
+		if( defined( $local_specs->{$key}{'max'} ) && defined( $local_config->{$key} )){
 			if( $local_config->{$key} > $local_specs->{$key}{'max'} && !$local_opts->{'force'}{'value'} ){
+				msg( "$key: value=".$local_config->{$key}." > max=".$local_specs->{$key}{'max'}
+					." and force is not set: forcing the value to max" ) if $opt_verbose;
 				$local_config->{$key} = $local_specs->{$key}{'max'};
 			}
 		}
@@ -671,10 +748,14 @@ sub config_read_file( $$ ){
 sub config_str_value( $ ){
 	my $local_value = shift;
 	my $out_str;
-	if( ref( $local_value ) eq "ARRAY" ){
-		$out_str = "[".join( ",", @$local_value )."]";
+	if( defined( $local_value )){
+		if( ref( $local_value ) eq "ARRAY" ){
+			$out_str = "[".join( ",", @$local_value )."]";
+		} else {
+			$out_str = $local_value;
+		}
 	} else {
-		$out_str = $local_value;
+		$out_str = "undef";
 	}
 	return( $out_str );
 }
@@ -715,7 +796,7 @@ sub max_load_5_def( $$ ){
 	my $load_key = ${$_[0]}[0];
 	my $load = $local_parms->{$load_key};
 	#print "in max_load_5_def: key=$load_key load=$load\n";
-	return( 3*$load/4 );
+	return( defined( $load ) ? 3*$load/4 : undef );
 }
 
 # ---------------------------------------------------------------------
@@ -725,7 +806,7 @@ sub max_load_15_def( $$ ){
 	my $load_key = ${$_[0]}[0];
 	my $load = $local_parms->{$load_key};
 	#print "in max_load_15_def: key=$load_key load=$load\n";
-	return( 1*$load/2 );
+	return( defined( $load ) ? 1*$load/2 : undef );
 }
 
 # ---------------------------------------------------------------------
@@ -828,7 +909,7 @@ sub read_daemon_command( $ ){
     if( defined( $client )){
 	    my $answer = "";
 		if( $data =~ /^\s*DUMP\s+OPTS\s*$/ ){
-			my @tmp_array = cmdline_dump_array( $opts_specs, $opts );
+			my @tmp_array = cmdline_dump_array( $option_specs, $opts );
 			$answer = join( "\n", @tmp_array );
 
 		} elsif( $data =~ /^\s*DUMP\s+PARMS\s*$/ ){
@@ -845,7 +926,7 @@ sub read_daemon_command( $ ){
 			}
 
 		} elsif( $data =~ /^\s*HELP\s*$/ ){
-			$answer = $opts_help;
+			$answer = $option_help_post;
 
 		} elsif( $data =~ /^\s*PING\s+ON|OFF\s*$/ ){
 			my $temp_parm = $data;
@@ -943,23 +1024,28 @@ sub send_serial( $ ){
 sub check_interface( $ ){
     my $tick = shift;
     my $reboot = false;
-    foreach( @{$parms->{'interface'}} ){
-    	if( !$reboot ){
-	    	my $ifconfig = `ifconfig $_ 2>&1`;
-	    	my $rx = 0;
-	    	my $tx = 0;
-	    	if( $ifconfig =~ m/.*RX packets ([0-9]+).*/ms ){
-	    		$rx = $1;
+    if( !@{$parms->{'interface'}} ){
+    	msg( "interface(s) check is not enabled" )
+    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    } else {
+	    foreach( @{$parms->{'interface'}} ){
+	    	if( !$reboot ){
+		    	my $ifconfig = `ifconfig $_ 2>&1`;
+		    	my $rx = 0;
+		    	my $tx = 0;
+		    	if( $ifconfig =~ m/.*RX packets ([0-9]+).*/ms ){
+		    		$rx = $1;
+		    	}
+		    	if( $ifconfig =~ m/.*TX packets ([0-9]+).*/ms ){
+		    		$tx = $1;
+		    	}
+	    		$reboot = ( $rx+$tx == 0 );
+	    		msg( "interface=$_, rx=$rx, tx=$tx" )
+	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
 	    	}
-	    	if( $ifconfig =~ m/.*TX packets ([0-9]+).*/ms ){
-	    		$tx = $1;
-	    	}
-    		$reboot = ( $rx+$tx == 0 );
-    		msg( "interface=$_, rx=$rx, tx=$tx" )
-    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
-    	}
+	    }
+	    $reason_code = 23 if $reboot;
     }
-    $reason_code = 23 if $reboot;
     return( $reboot );
 }
 
@@ -974,31 +1060,49 @@ sub check_interface( $ ){
 sub check_loadavg( $ ){
     my $tick = shift;
     my $reboot = false;
-    if( $parms->{'max-load-1'} > 0 || $parms->{'max-load-5'} > 0 || $parms->{'max-load-15'} > 0 ){
+
+    if(( defined( $parms->{'max-load-1'} ) && $parms->{'max-load-1'} > 0 ) ||
+    		( defined( $parms->{'max-load-5'} ) && $parms->{'max-load-5'} > 0 ) ||
+    		( defined( $parms->{'max-load-15'} ) && $parms->{'max-load-15'} > 0 )){
+
 	    open my $fh, "/proc/loadavg";
 	    if( defined( $fh )){
 	    	my $line = <$fh>;
 	    	close( $fh );
 	    	chomp $line;
 	    	my ( $avg1, $avg5, $avg10, $processes, $lastpid ) = split( / /, $line );
-	    	if( $parms->{'max-load-1'} > 0 && $avg1 > $parms->{'max-load-1'} ){
+	    	if( defined( $parms->{'max-load-1'} ) &&
+	    			$parms->{'max-load-1'} > 0 &&
+	    			$avg1 > $parms->{'max-load-1'} ){
 	    		$reason_code = 16;
 	    		$reboot = true;
-	    	} elsif( $parms->{'max-load-5'} > 0 && $avg5 > $parms->{'max-load-5'} ){
+
+	    	} elsif( defined( $parms->{'max-load-5'} ) &&
+	    			$parms->{'max-load-5'} > 0 &&
+	    			$avg5 > $parms->{'max-load-5'} ){
 	    		$reason_code = 17;
 	    		$reboot = true;
-	    	} elsif( $parms->{'max-load-15'} > 0 && $avg10 > $parms->{'max-load-15'} ){
+
+	    	} elsif( defined( $parms->{'max-load-15'} ) &&
+	    			$parms->{'max-load-15'} > 0 &&
+	    			$avg10 > $parms->{'max-load-15'} ){
 	    		$reason_code = 18;
 	    		$reboot = true;
 	    	}
-	    	msg( "parm:max-load-1=".$parms->{'max-load-1'}.", avg1=$avg1, "
-	    			."parm:max-load-5=".$parms->{'max-load-5'}.", avg5=$avg5, "
-	    			."parm:max-load-15=".$parms->{'max-load-15'}.", avg10=$avg10, "
+	    	msg( "parm:max-load-1=".config_str_value( $parms->{'max-load-1'} )
+	    			.", avg1=$avg1, "
+	    			."parm:max-load-5=".config_str_value( $parms->{'max-load-5'} )
+	    			.", avg5=$avg5, "
+	    			."parm:max-load-15=".config_str_value( $parms->{'max-load-15'} )
+	    			.", avg10=$avg10, "
 	    			."processes=${processes}, lastpid=${lastpid}" )
 			    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
 	    } else {
 	    	msg( "unable to open /proc/loadavg: $!" );
 	    }
+    } else {
+    	msg( "load average check is not enabled" )
+				if $opt_verbose && $tick >= $parms->{'logtick'};
     }
     return( $reboot );
 }
@@ -1027,13 +1131,16 @@ sub check_memory( $ ){
 	    	}
 	    	close( $fh );
 	    	$reboot = true if $swap_free < $parms->{'min-memory'};
+		    $reason_code = 19 if $reboot;
 	    	msg( " parm:min-memory=".$parms->{'min-memory'}.", swap_free=$swap_free" )
 	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
 	    } else {
 	    	msg( "unable to open /proc/meminfo: $!" );
 	    }
+    } else {
+    	msg( "virtual memory check is not enabled" )
+				if $opt_verbose && $tick >= $parms->{'logtick'};
     }
-    $reason_code = 19 if $reboot;
     return( $reboot );
 }
 
@@ -1045,25 +1152,30 @@ sub check_memory( $ ){
 sub check_pidfile( $ ){
     my $tick = shift;
     my $reboot = false;
-    foreach( @{$parms->{'pidfile'}} ){
-    	if( !$reboot ){
-	    	if( open( my $fh, '<', $_ )){
-	    		my $pid = <$fh>;
-	    		close $fh;
-	    		chomp $pid;
-	    		# this only works for process with same UID
-	    		#my $exists = kill 0, $pid;
-	    		my $exists = ( system( "ps --pid $pid 1>/dev/null 2>&1" ) == 0 );
-	    		#print "pid=$pid, exists=".( $exists ? "true":"false" )."\n";
-	    		$reboot = !$exists;
-	    		msg( "pidfile=".$_.", pid=$pid, exists=".( $exists ? "true":"false" ))
-	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
-	    	} else {
-	    		msg( "warning: unable to open ".$_." for reading: $!" );
+    if( !@{$parms->{'pidfile'}} ){
+    	msg( "pid file(s) check is not enabled" )
+    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    } else {
+	    foreach( @{$parms->{'pidfile'}} ){
+	    	if( !$reboot ){
+		    	if( open( my $fh, '<', $_ )){
+		    		my $pid = <$fh>;
+		    		close $fh;
+		    		chomp $pid;
+		    		# this only works for process with same UID
+		    		#my $exists = kill 0, $pid;
+		    		my $exists = ( system( "ps --pid $pid 1>/dev/null 2>&1" ) == 0 );
+		    		#print "pid=$pid, exists=".( $exists ? "true":"false" )."\n";
+		    		$reboot = !$exists;
+		    		msg( "pidfile=".$_.", pid=$pid, exists=".( $exists ? "true":"false" ))
+		    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+		    	} else {
+		    		msg( "warning: unable to open ".$_." for reading: $!" );
+		    	}
 	    	}
-    	}
+	    }
+	    $reason_code = 21 if $reboot;
     }
-    $reason_code = 21 if $reboot;
     return( $reboot );
 }
 
@@ -1073,15 +1185,20 @@ sub check_pidfile( $ ){
 sub check_ping( $ ){
     my $tick = shift;
     my $reboot = false;
-    foreach( @{$parms->{'ping'}} ){
-    	if( !$reboot ){
-	    	my $alive = ( system( "ping -c1 $_ 1>/dev/null 2>&1" ) == 0 );
-    		$reboot = !$alive;
-    		msg( "ipv4=$_, alive=".( $alive ? "true":"false" ))
-    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
-    	}
+    if( !@{$parms->{'ping'}} ){
+    	msg( "ping(s) check is not enabled" )
+    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    } else {
+	    foreach( @{$parms->{'ping'}} ){
+	    	if( !$reboot ){
+		    	my $alive = ( system( "ping -c1 $_ 1>/dev/null 2>&1" ) == 0 );
+	    		$reboot = !$alive;
+	    		msg( "ipv4=$_, alive=".( $alive ? "true":"false" ))
+	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+	    	}
+	    }
+	    $reason_code = 22 if $reboot;
     }
-    $reason_code = 22 if $reboot;
     return( $reboot );
 }
 
@@ -1090,6 +1207,8 @@ sub check_ping( $ ){
 # /sys/class/thermal/thermal_zone0/temp: 36000
 # /sys/class/thermal/thermal_zone1/temp: 41000
 # returns: true if the system must be rebooted
+# NB: there is no way to disable the temperature check: it is always
+#     enabled 
 sub check_temperature( $ ){
     my $tick = shift;
     my $reboot = false;
@@ -1145,7 +1264,7 @@ sub reboot(){
 # isolated in a function to be used by the child when in daemon mode
 sub run_server(){
 	# command-line options
-	cmdline_dump( $opts_specs, $opts ) if $opt_verbose;
+	cmdline_dump( $option_specs, $opts ) if $opt_verbose;
 	#print "opt_verbose=".($opt_verbose ? "true":"false")."\n";
 
 	# configuration parameters
@@ -1338,7 +1457,7 @@ $SIG{TERM} = \&catch_term;
 $SIG{USR1} = \&catch_usr1;
 
 exit if is_running();
-exit if !cmdline_get_options( $opts_specs, $opts );
+exit if !cmdline_get_options( $option_specs, $opts );
 
 my $child_pid = Proc::Daemon::Init() if $opts->{'daemon'}{'value'};
 msg( "child_pid=${child_pid}" ) if $opts->{'daemon'}{'value'} && $opt_verbose;
