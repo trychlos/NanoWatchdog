@@ -296,7 +296,7 @@ bool cmdHelp()
     Serial.println( F( " NOOP                 no-operation (used at NanoWatchdog startup)" ));
     Serial.println( F( " PING                 ping the watchdog, reinitializing the timeout delay" ));
     Serial.println( F( " REBOOT <reason>      reset the PC right now" ));
-    Serial.println( F( " REINIT               reinit watchdog after a reset (development mode)" ));
+    Serial.println( F( " REINIT               reinit watchdog after a reset (deprecated since 2015.2)" ));
     Serial.println( F( " SET DATE <date>      set current UTC date as a count of seconds since 1970-01-01 (EPOCH time)" ));
     Serial.println( F( "                      (needed for storing actual reset date and time)" ));
     Serial.print  ( F( " SET DELAY <delay>    set no-ping timeout before reset (min=1, max=65535 (~18h)) [" ));
