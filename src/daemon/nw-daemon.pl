@@ -147,13 +147,13 @@ my $opts_help = " The daemon recognizes following commands:
     DUMP OPTS    dump the command-line options values
     DUMP PARMS   dump the configuration parameters values
     GET <parm>   returns the value of (case-sensitive) parameter or option
+    HELP         print this list of commands
     PING ON|OFF  reactive or inhibit the periodic ping
     QUIT         terminates the daemon
  This daemon handles the following signals:
     HUP          reloads the configuration file
     TERM         terminates the daemon
-    USR1         restart the NanoWatchdog
-";
+    USR1         restart the NanoWatchdog";
 
 # origin of option values
 use constant { OPT_DEFAULT => 0, OPT_CMDLINE => 1, OPT_COMMAND => 2 };
@@ -232,7 +232,6 @@ sub catch_int(){
 # ---------------------------------------------------------------------
 # program termination
 sub catch_term(){
-	msg( "exiting with code $errs" ) if $opt_verbose;
 	if( defined( $serial )){
 		send_serial( "STOP" );
 		$serial->close();
@@ -240,7 +239,7 @@ sub catch_term(){
 	$socket_serial->close() if defined( $socket_serial );
 	$socket_daemon->close() if defined( $socket_daemon );
 	msg( "NanoWatchdog terminating..." ) if $opt_verbose || $background;
-	exit $errs;
+	exit;
 }
 
 # ---------------------------------------------------------------------
@@ -473,7 +472,8 @@ sub cmdline_help( $ ){
 		}
 	}
 	# help end
-	print $opts_help;
+	print "$opts_help
+";
 }
 
 # ---------------------------------------------------------------------
@@ -680,6 +680,35 @@ sub config_str_value( $ ){
 }
 
 # ---------------------------------------------------------------------
+# returns true if the daemon is already running
+# this command is run at very startup, even before command-line options
+# are checked; the daemon has no chance of doing anything before being
+# exited.
+# NOTE that this sub is not really exact: another program may run with
+# the same name, thus returning a false positive to the process grep...
+sub is_running(){
+	my $pid = "";
+	my @pidlist = `ps -ef`;
+	foreach ( @pidlist ){
+		chomp;
+		my @columns = split( /\s+/, $_, 8 );
+		#print "col_1=".$columns[1]."\n";
+		next if $columns[1] =~ /$$/;
+		#print "col_7=".$columns[7]."\n";
+		next if $columns[7] !~ /$me/;
+		#print "found: me=$me, pid=".$columns[1]."\n";
+		$pid = $columns[1];
+		last;
+	}
+	my $running = length( $pid ) > 0;
+	if( $running ){
+		msg( "warning: $me is already running with pid $pid" );
+		$errs += 1;
+	}
+	return( $running );
+}
+
+# ---------------------------------------------------------------------
 # Compute the default value of max-load-5 given max-load-1 
 sub max_load_5_def( $$ ){
 	my $local_parms = shift;
@@ -721,7 +750,7 @@ sub msg_format( $ ){
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v2015.1
+	print ' NanoWatchdog v2015.2
  Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
 ';
 }
@@ -798,31 +827,35 @@ sub read_daemon_command( $ ){
     my $client = read_command( $local_socket, \$data );
     if( defined( $client )){
 	    my $answer = "";
-		if( $data =~ /^DUMP\s+OPTS$/ ){
+		if( $data =~ /^\s*DUMP\s+OPTS\s*$/ ){
 			my @tmp_array = cmdline_dump_array( $opts_specs, $opts );
 			$answer = join( "\n", @tmp_array );
 
-		} elsif( $data =~ /^DUMP\s+PARMS$/ ){
+		} elsif( $data =~ /^\s*DUMP\s+PARMS\s*$/ ){
 			my @tmp_array = config_dump_array( $parm_specs, $parms );
 			$answer = join( "\n", @tmp_array );
 
-		} elsif( $data =~ /^GET\s+/ ){
+		} elsif( $data =~ /^\s*GET\s+/ ){
 			my $temp_parm = $data;
-			$temp_parm =~ s/^GET\s+//;
+			$temp_parm =~ s/^\s*GET\s+//;
 			if( defined( $parms->{$temp_parm} )){
 				$answer = $parms->{$temp_parm};
 			} elsif( defined( $opts->{$temp_parm}{'value'} )){
 				$answer = $opts->{$temp_parm}{'value'};
 			}
 
-		} elsif( $data =~ /^PING\s+ON|OFF$/ ){
+		} elsif( $data =~ /^\s*HELP\s*$/ ){
+			$answer = $opts_help;
+
+		} elsif( $data =~ /^\s*PING\s+ON|OFF\s*$/ ){
 			my $temp_parm = $data;
-			$temp_parm =~ s/^PING\s+//;
+			$temp_parm =~ s/^\s*PING\s+//;
+			$temp_parm =~ s/\s*$//;
 			$opts->{'ping'}{'value'} = ( $temp_parm eq "ON" );
 			$opts->{'ping'}{'orig'} = OPT_COMMAND;
 			$answer = msg_format( "OK: $data" );
 
-		} elsif( $data eq "QUIT" ){
+		} elsif( $data =~ /^\s*QUIT\s*$/ ){
 			$have_to_quit = true;
 			$answer = msg_format( "OK: $data" );
 		}
@@ -1304,6 +1337,7 @@ $SIG{INT} = \&catch_int;
 $SIG{TERM} = \&catch_term;
 $SIG{USR1} = \&catch_usr1;
 
+exit if is_running();
 exit if !cmdline_get_options( $opts_specs, $opts );
 
 my $child_pid = Proc::Daemon::Init() if $opts->{'daemon'}{'value'};
@@ -1317,3 +1351,11 @@ if( !$child_pid ){
 run_server() if !$opts->{'daemon'}{'value'} or !$child_pid;
 
 exit;
+
+END {
+	# this last sentence has no chance of being printed if the program
+	# exits because of already running (because command-line options
+	# have not been set at this time).
+	msg( "exiting with code $errs" ) if $opt_verbose;
+	exit $errs;
+}
