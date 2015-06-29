@@ -5,6 +5,7 @@ Requires=local-fs.target network-online.target
 
 [Service]
 Type=forking
+PIDFile=/var/run/nanowatchdog.pid
 ExecStart=/opt/trychlos.pwi/nanowatchdog/nw-daemon.pl -verbose
 Restart=on-failure
 
