@@ -29,7 +29,9 @@
                 command interface doesn't update corresponding configu-
                 ration parameter (if any)
 
-  21
+  23 2015- 7- 9 add Ansible installation role to the repository
+
+  24
 
 -----------------------------------------------------------------------
  DONE
@@ -81,6 +83,18 @@
 
   19 2015- 6-24 Add a HELP command to nw-daemon commands
      2015- 6-29 done for 2015.2
+
+  21 2015- 7- 9 configure 'from' field of the mail
+                (do not only rely on hostname)
+     2015- 7- 9 done for 2015.3
+
+  22 2015- 7- 9 systemctl start NanoWatchdog
+                - returns after one minute
+                - terminating the daemon, then re-running and so on
+                  every minute
+                Maybe at least part of the fix may be to actually
+                create the PID file ?
+     2015- 7- 9 fixed for 2015.3
 
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, may 26th.

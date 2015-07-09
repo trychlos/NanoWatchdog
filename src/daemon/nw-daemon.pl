@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# @(#) NanoWatchdog 2015.1
+# @(#) NanoWatchdog
 #
 # Copyright (C) 2015 Pierre Wieser (see AUTHORS)
 #
@@ -52,6 +52,7 @@ sub max_load_15_def;
 sub msg;
 sub msg_format;
 sub msg_version;
+sub send_from_def;
 sub send_serial;
 sub start_watchdog;
 
@@ -252,7 +253,9 @@ my $parm_specs = {
 							 'max'		=> 3600,
 							 'opt'		=> "delay" },
 	'send-mail'			=> { 'def'		=> "never" },
+	'send-from'			=> { 'def'		=> \&send_from_def },
 	'status-file'		=> { 'def'		=> "" },
+	'pid-file'			=> { 'def'		=> "" },
 	'interval'			=> { 'min'		=> 5,
 							 'max'		=> 60,
 							 'opt'		=> "interval" },
@@ -810,6 +813,12 @@ sub max_load_15_def( $$ ){
 }
 
 # ---------------------------------------------------------------------
+# Compute the default value of send-from
+sub send_from_def(){
+	return( "nanowatchdog@".hostname );
+}
+
+# ---------------------------------------------------------------------
 # Display the specified message, either on stdout or in syslog, 
 # depending if we are running in the foreground or in the background 
 sub msg( $ ){
@@ -831,7 +840,7 @@ sub msg_format( $ ){
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v2015.2
+	print ' NanoWatchdog v2015.3
  Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
 ';
 }
@@ -1271,6 +1280,9 @@ sub run_server(){
 	return if !config_read( $parm_specs, $parms, $opts->{'config'}{'value'}, $opts );
 	config_dump( $parm_specs, $parms ) if $opt_verbose;
 
+	# write pid file if requested to
+	write_pid();
+
 	# open communication sockets
 	$socket_serial = open_socket( $parms->{'ip'}, $parms->{'port-serial'} );
 	$socket_daemon = open_socket( $parms->{'ip'}, $parms->{'port-daemon'} );
@@ -1345,7 +1357,7 @@ sub send_boot_mail( $ ){
 	my $local_status = shift;
 	if( $parms->{'send-mail'} ne "never" && length( $parms->{'admin'} )){
 		my $to = $parms->{'admin'};
-		my $from = "nanowatchdog@".hostname;
+		my $from = $parms->{'send-from'};
 		my $subject = "The machine has just boot";
 		my $message = "";
 		my $ack = "";
@@ -1432,6 +1444,22 @@ sub wait_for_watchdog_init(){
 }
 
 # ---------------------------------------------------------------------
+# write the daemon PID into a file
+# this file will be automatically deleted by system when stopping the
+# daemon
+sub write_pid(){
+	if( length( $parms->{'pid-file'} )){
+		if( open( my $fh, '>', $parms->{'pid-file'} )){
+			print $fh $$."\n";
+			close $fh;
+			msg( "pid written in ".$parms->{'pid-file'} ) if $opt_verbose;
+		} else {
+			msg( "warning: unable to open ".$parms->{'pid-file'}." for write: $!" );
+		}
+	}
+}
+
+# ---------------------------------------------------------------------
 # write the STATUS into a file
 sub write_status( $ ){
 	my $local_status = shift;
@@ -1442,7 +1470,7 @@ sub write_status( $ ){
 			close $fh;
 			msg( "status written in ".$parms->{'status-file'} ) if $opt_verbose;
 		} else {
-			msg( "warning: unable to open ".$parms->{'status'}." for write: $!" );
+			msg( "warning: unable to open ".$parms->{'status-file'}." for write: $!" );
 		}
 	}
 }

@@ -3,8 +3,23 @@
  Summary
  =======
  
+   Version 2015.3
    Version 2015.2
    Version 2015.1
+
+-----------------------------------------------------------------------
+ Version 2015.3
+ ==============
+
+ Release date: 
+
+ NanoWatchdog configuration:
+
+               - add send-from parameter (todo #21).
+               - add pid-file parameter which fixes the daemon startup
+                 (todo #22).
+
+ PCB:          v5
 
 -----------------------------------------------------------------------
  Version 2015.2
