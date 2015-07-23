@@ -17,5 +17,5 @@
 # <http://www.gnu.org/licenses/>.
 
 SUBDIRS = \
-	system			\
+	system					\
 	$(NULL)

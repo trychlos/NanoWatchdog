@@ -17,9 +17,12 @@
 # <http://www.gnu.org/licenses/>.
 
 SUBDIRS = \
-	systemd			\
+	systemd					\
 	$(NULL)
 
-confdir = $(sysconfdir)/sysconfig
+confdir = $(sysconfdir)
 
-dist_conf_DATA = pcleantmp
+dist_conf_DATA = \
+	nanowatchdog.conf		\
+	watchdog.conf			\
+	$(NULL)

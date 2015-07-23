@@ -15,3 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+docdir = $(datadir)/doc/@PACKAGE@-@VERSION@
+
+dist_doc_DATA = \
+	CommunicationFlows.odg	\
+	Sheets.ods				\
+	watchdog_5.pdf			\
+	watchdog_8.pdf			\
+	$(NULL)

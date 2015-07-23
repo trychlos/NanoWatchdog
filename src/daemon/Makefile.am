@@ -15,3 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+libexec_PROGRAMS = \
+	nw-daemon.pl			\
+	$(NULL)
+
+nw_daemon_pl_SOURCES =

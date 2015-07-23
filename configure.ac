@@ -35,6 +35,7 @@ AC_CONFIG_FILES([
 	etc/Makefile
 	etc/systemd/Makefile
 	etc/systemd/system/Makefile
+	etc/systemd/system/nanowatchdog.service
 	pcb/Makefile
 	src/Makefile
 	src/client/Makefile

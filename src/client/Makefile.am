@@ -15,3 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+bin_PROGRAMS = \
+	nw-client.pl			\
+	$(NULL)
+
+nw_client_pl_SOURCES =

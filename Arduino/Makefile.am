@@ -17,6 +17,6 @@
 # <http://www.gnu.org/licenses/>.
 
 SUBDIRS = \
-	lib				\
-	NanoWatchdog	\
+	lib						\
+	NanoWatchdog			\
 	$(NULL)

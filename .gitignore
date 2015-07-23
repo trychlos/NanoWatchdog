@@ -6,3 +6,9 @@ autom4te.cache/
 configure
 install-sh
 missing
+.includepath
+_install/
+Makefile
+config.log
+config.status
+nanowatchdog.service

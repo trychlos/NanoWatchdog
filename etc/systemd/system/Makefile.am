@@ -15,3 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+servicedir = $(sysconfdir)/systemd/system
+
+service_DATA = \
+	nanowatchdog.service	\
+	$(NULL)
