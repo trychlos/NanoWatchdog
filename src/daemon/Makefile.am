@@ -16,8 +16,6 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-libexec_PROGRAMS = \
+dist_libexec_SCRIPTS = \
 	nw-daemon.pl			\
 	$(NULL)
-
-nw_daemon_pl_SOURCES =
