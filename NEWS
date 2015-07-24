@@ -11,13 +11,25 @@
  Version 2015.3
  ==============
 
- Release date: 
+ Release date: 2015- 7-24
+
+ Generalitites:
+               - have a standard 'configure' script (todo #24).
 
  NanoWatchdog configuration:
 
                - add send-from parameter (todo #21).
                - add pid-file parameter which fixes the daemon startup
                  (todo #22).
+
+ NanoWatchdog daemon:
+
+               - add a trailing line feed to the nanowatchdog status
+                 file (todo #25).
+
+ NanoWatchdog board:
+
+               - remove two chars shift from STATUS output (todo #26).
 
  PCB:          v5
 
