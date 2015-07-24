@@ -59,7 +59,7 @@ sub msg_help(){
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v2015.2
+	print ' NanoWatchdog v2015.3
  Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
 ';
 }
