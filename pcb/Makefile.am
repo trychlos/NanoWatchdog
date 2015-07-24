@@ -15,3 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+EXTRA_DIST = \
+	pcb_v4.odg				\
+	pcb_v5.odg				\
+	pcb_v5.pdf				\
+	$(NULL)
