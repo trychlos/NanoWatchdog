@@ -21,3 +21,6 @@ servicedir = $(sysconfdir)/systemd/system
 service_DATA = \
 	nanowatchdog.service	\
 	$(NULL)
+
+install-data-hook:
+	sed -i -e 's|LIBEXECDIR|$(libexecdir)|' $(DESTDIR)$(servicedir)/nanowatchdog.service

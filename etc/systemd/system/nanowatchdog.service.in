@@ -1,3 +1,5 @@
+# @configure_input@
+
 [Unit]
 Description=NanoWatchdog management daemon
 After=local-fs.target network-online.target
@@ -6,7 +8,7 @@ Requires=local-fs.target network-online.target
 [Service]
 Type=forking
 PIDFile=/var/run/nanowatchdog.pid
-ExecStart=@libexecdir@/nw-daemon.pl -verbose
+ExecStart=LIBEXECDIR/nw-daemon.pl -verbose
 Restart=on-failure
 
 [Install]
