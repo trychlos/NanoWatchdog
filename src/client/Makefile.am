@@ -16,8 +16,6 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-bin_PROGRAMS = \
+dist_bin_SCRIPTS = \
 	nw-client.pl			\
 	$(NULL)
-
-nw_client_pl_SOURCES =
