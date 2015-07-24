@@ -1466,7 +1466,7 @@ sub write_status( $ ){
 	#print "status='$local_status'\n";
 	if( length( $parms->{'status-file'} ) && length( $local_status )){
 		if( open( my $fh, '>', $parms->{'status-file'} )){
-			print $fh $local_status;
+			print $fh $local_status."\n";
 			close $fh;
 			msg( "status written in ".$parms->{'status-file'} ) if $opt_verbose;
 		} else {
