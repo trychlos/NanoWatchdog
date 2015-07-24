@@ -8,7 +8,4 @@ install-sh
 missing
 .includepath
 _install/
-Makefile
-config.log
-config.status
-nanowatchdog.service
+_build/
