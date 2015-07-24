@@ -16,8 +16,6 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-AUTOMAKE_OPTIONS = dist-xz
-
 SUBDIRS = \
 	Arduino			\
 	doc				\

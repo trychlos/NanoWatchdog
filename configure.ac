@@ -22,7 +22,8 @@ AC_PREREQ(2.59)
 
 AC_INIT([NanoWatchdog],[2015.3],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
 
-AM_INIT_AUTOMAKE([-Wall -Werror])
+# unable to define something as 'no-dist-gz'
+AM_INIT_AUTOMAKE([dist-xz])
 
 AC_CONFIG_SRCDIR([src/daemon/nw-daemon.pl])
 
