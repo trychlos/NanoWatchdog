@@ -15,3 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+
+EXTRA_DIST = \
+	NanoWatchdog.cpp		\
+	NanoWatchdog.h			\
+	nwEEPROM.cpp			\
+	nwEEPROM.h				\
+	nwEvent.cpp				\
+	nwEvent.h				\
+	nwReason.cpp			\
+	nwReason.h				\
+	$(NULL)
