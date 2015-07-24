@@ -29,15 +29,10 @@
                 command interface doesn't update corresponding configu-
                 ration parameter (if any)
 
-  23 2015- 7- 9 add Ansible installation role to the repository
+  27 2015- 7-24 autoconf: configure pidfile pathname
+     2015- 7-24 see 'pidfile' branch - doesn't work at the moment
 
-  24 2015- 7-20 have a Makefile to create an installable tarball
-
-  25 2015- 7-20 add a line feed at the end of nanowatchdog.status
-
-  26 2015- 7-20 shift 2 spaces rights the four first lines of status
-
-  27
+  28
 
 -----------------------------------------------------------------------
  DONE
@@ -101,6 +96,18 @@
                 Maybe at least part of the fix may be to actually
                 create the PID file ?
      2015- 7- 9 fixed for 2015.3
+
+  23 2015- 7- 9 add Ansible installation role to the repository
+     2015- 7-24 not the purpose of the package; reported to Ansible tree
+
+  24 2015- 7-20 have a Makefile to create an installable tarball
+     2015- 7-20 done for 2015.3
+
+  25 2015- 7-20 add a line feed at the end of nanowatchdog.status
+     2015- 7-24 done for 2015.3
+
+  26 2015- 7-20 shift 2 spaces rights the four first lines of status
+     2015- 7-24 done for 2015.3
 
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, may 26th.
