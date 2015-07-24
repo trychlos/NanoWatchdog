@@ -518,17 +518,17 @@ bool cmdStatus()
 {
     nwSerialPrintVersion();
     Serial.println( F( "Current status:" ));
-    Serial.print  ( F( " Reset delay:  " ));                 /* reset delay */
+    Serial.print  ( F( " Reset delay:    " ));               /* reset delay */
     Serial.print  ( parmDelay );
     Serial.println( F( " sec." ));
-    Serial.print  ( F( " Test mode:    " ));                 /* test mode */
+    Serial.print  ( F( " Test mode:      " ));               /* test mode */
     Serial.println( parmTest ? F( "ON (test mode)" ) : F( "OFF (reset mode)" ));
-    Serial.print  ( F( " Date set:     " ));                 /* whether the date has been set */
+    Serial.print  ( F( " Date set:       " ));               /* whether the date has been set */
     Serial.println( dateSet ? F( "yes" ) : F( "no" ));
-    Serial.print  ( F( " Status:       " ));                 /* current status */
+    Serial.print  ( F( " Status:         " ));               /* current status */
     if( resetTime > 0 ){
         Serial.println( F( "reset" ));
-        Serial.print  ( F( "   Reset time: " ));           /* reset time (if resetted) */
+        Serial.print  ( F( "   Reset time:   " ));           /* reset time (if resetted) */
         Serial.println( nwDateTimeString( resetTime ));
     } else if( startTime > 0 ){
         Serial.println( F( "started" ));
