@@ -32,7 +32,7 @@
   27 2015- 7-24 autoconf: configure pidfile pathname
      2015- 7-24 see 'pidfile' branch - doesn't work at the moment
 
-  28
+  30
 
 -----------------------------------------------------------------------
  DONE
@@ -108,6 +108,13 @@
 
   26 2015- 7-20 shift 2 spaces rights the four first lines of status
      2015- 7-24 done for 2015.3
+
+  28 2015- 7-25 configure.ac: use no-dist-gzip
+     2015- 8-19 done for 4.2015
+
+  29 2015- 8-14 mail sent: remove leading spaces on second and third line
+                + replace yet by still
+     2015- 8-19 done for 4.2015
 
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, may 26th.

@@ -18,6 +18,7 @@
 
 SUBDIRS = \
 	systemd					\
+	udev					\
 	$(NULL)
 
 confdir = $(sysconfdir)

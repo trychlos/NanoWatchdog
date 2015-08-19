@@ -15,34 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
-#
-# use: "autoreconf" to generate configure.
 
-AC_PREREQ(2.59)
+confdir = $(sysconfdir)/udev/rules.d
 
-AC_INIT([NanoWatchdog],[4.2015],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
-
-# unable to define something as 'no-dist-gz'
-AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
-
-AC_CONFIG_SRCDIR([src/daemon/nw-daemon.pl])
-
-AC_CONFIG_FILES([
-	Makefile
-	Arduino/Makefile
-	Arduino/lib/Makefile
-	Arduino/NanoWatchdog/Makefile
-	doc/Makefile
-	etc/Makefile
-	etc/systemd/Makefile
-	etc/systemd/system/Makefile
-	etc/systemd/system/nanowatchdog.service
-	etc/udev/Makefile
-	etc/udev/rules.d/Makefile
-	pcb/Makefile
-	src/Makefile
-	src/client/Makefile
-	src/daemon/Makefile
-])
-
-AC_OUTPUT
+dist_conf_DATA = \
+	50-nanowatchdog.rules	\
+	$(NULL)

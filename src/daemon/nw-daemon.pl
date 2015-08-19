@@ -1358,7 +1358,7 @@ sub send_boot_mail( $ ){
 	if( $parms->{'send-mail'} ne "never" && length( $parms->{'admin'} )){
 		my $to = $parms->{'admin'};
 		my $from = $parms->{'send-from'};
-		my $subject = "The machine has just boot";
+		my $subject = hostname." has just boot up";
 		my $message = "";
 		my $ack = "";
 		if( $local_status =~ m/.*acknowledged:\s+(yes|no).*/ms ){
@@ -1374,9 +1374,10 @@ sub send_boot_mail( $ ){
 			}
 			#print "reason='$reason'\n";
 			$message = "
-	It is very probable that last reboot has been initiated by NanoWatchdog,
-	as I have found that last reset event is yet left unacknowledged.
-	Reason was: ${reason}.";
+ It is very probable that last reboot has been initiated by NanoWatchdog,
+ as I have found that last reset event which is still left unacknowledged.
+
+ Reason was: ${reason}.";
 		}
 		if( length( $message )){
 			my $msg = MIME::Lite->new(

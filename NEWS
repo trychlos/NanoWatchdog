@@ -3,9 +3,25 @@
  Summary
  =======
  
+   Version 4.2015
    Version 2015.3
    Version 2015.2
    Version 2015.1
+
+-----------------------------------------------------------------------
+ Version 4.2015
+ ==============
+
+ Release date: 2015- 8-19
+
+ Packaging:
+               - change the versioning scheme.
+               - define an 'install-txz' autonomous target.
+               - define an udev rule to /dev/nanowatchdog.
+               - use 'no-dist-gzip' (todo #28).
+
+ NanoWatchdog daemon:
+               - review the mail sent at boot up (todo #29).
 
 -----------------------------------------------------------------------
  Version 2015.3
@@ -13,7 +29,7 @@
 
  Release date: 2015- 7-24
 
- Generalitites:
+ Generalities:
                - have a standard 'configure' script (todo #24).
 
  NanoWatchdog configuration:

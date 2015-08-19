@@ -16,33 +16,10 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 #
-# use: "autoreconf" to generate configure.
+# Naming rule for NanoWatchdog
+# See: udevadm info -a -p $(udevadm info -q path -n /dev/ttyUSB0)
+#
+# Note that the idVendor and idProduct values may actually depend of
+# your Arduino Nano provider.
 
-AC_PREREQ(2.59)
-
-AC_INIT([NanoWatchdog],[4.2015],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
-
-# unable to define something as 'no-dist-gz'
-AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
-
-AC_CONFIG_SRCDIR([src/daemon/nw-daemon.pl])
-
-AC_CONFIG_FILES([
-	Makefile
-	Arduino/Makefile
-	Arduino/lib/Makefile
-	Arduino/NanoWatchdog/Makefile
-	doc/Makefile
-	etc/Makefile
-	etc/systemd/Makefile
-	etc/systemd/system/Makefile
-	etc/systemd/system/nanowatchdog.service
-	etc/udev/Makefile
-	etc/udev/rules.d/Makefile
-	pcb/Makefile
-	src/Makefile
-	src/client/Makefile
-	src/daemon/Makefile
-])
-
-AC_OUTPUT
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="nanowatchdog"
