@@ -840,7 +840,7 @@ sub msg_format( $ ){
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v2015.3
+	print ' NanoWatchdog v5.2015
  Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
 ';
 }
@@ -1375,7 +1375,10 @@ sub send_boot_mail( $ ){
 			#print "reason='$reason'\n";
 			$message = "
  It is very probable that last reboot has been initiated by NanoWatchdog,
- as I have found that last reset event which is still left unacknowledged.
+ as I have found that last reset event is still left unacknowledged.
+
+ Boot up status:
+${local_status}
 
  Reason was: ${reason}.";
 		}

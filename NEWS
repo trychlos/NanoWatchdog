@@ -3,10 +3,20 @@
  Summary
  =======
  
+   Version 5.2015
    Version 4.2015
    Version 2015.3
    Version 2015.2
    Version 2015.1
+
+-----------------------------------------------------------------------
+ Version 5.2015
+ ==============
+
+ Release date: 2015- 8-29
+
+ NanoWatchdog daemon:
+               - review the mail sent at boot up.
 
 -----------------------------------------------------------------------
  Version 4.2015

@@ -20,7 +20,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([NanoWatchdog],[4.2015],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
+AC_INIT([NanoWatchdog],[5.2015],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
 
 # unable to define something as 'no-dist-gz'
 AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
