@@ -23,6 +23,7 @@ use Getopt::Long;
 use IO::Socket::INET;
 
 my $me = basename( $0 );
+my $my_version = "6.2015";
 use constant { true => 1, false => 0 };
  
 # auto-flush on socket
@@ -39,6 +40,7 @@ my $opt_verbose = false;
 
 my $opt_listen_ip_def = "127.0.0.1";
 my $opt_listen_ip = $opt_listen_ip_def;
+my $opt_listen_board_def = 7778;
 my $opt_listen_port_def = 7777;
 my $opt_listen_port = $opt_listen_port_def;
 my $opt_command_def = "";
@@ -52,16 +54,17 @@ sub msg_help(){
   --[no]version           print script version, and exit [${opt_version_def}]
   --[no]verbose           run verbosely [$opt_verbose_def]
   --listen=ip             IP address to communicate with the daemon [${opt_listen_ip_def}]
-  --port=port             port number to communicate with the dameon [${opt_listen_port_def}]
+  --port=port             port number to communicate with the daemon [${opt_listen_port_def}]
+                                                   or with the board [${opt_listen_board_def}]
   --command=command       command to send [${opt_command_def}]
 ";
 }
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v5.2015
- Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
-';
+	print " NanoWatchdog v${my_version}
+ Copyright (C) 2015, Pierre Wieser <pwieser\@trychlos.org>
+";
 }
 
 # ---------------------------------------------------------------------
