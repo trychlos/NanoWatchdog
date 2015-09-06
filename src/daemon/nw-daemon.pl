@@ -40,6 +40,7 @@ use Sys::Syslog qw(:standard :macros);
 use constant { true => 1, false => 0 };
 
 my $me = basename( $0 );				# program base name
+my $my_version = "6.2015";
 my $errs = 0;							# exit code
 my $nbopts = $#ARGV;					# command-line args count
 
@@ -139,7 +140,7 @@ my $option_specs = [					# the options specification array
 	{ 'port-serial'	=> { 'spec'		=> '=i', 
 						 'template'	=> '=number',
 						 'def'		=> "7777",
-						 'help'		=> "port number the TCP server must listen to for commands" }},
+						 'help'		=> "port number the TCP server must listen to for board commands" }},
 	# watchdog actions
 	# delay command-line option overrides eponym configuration parameter
 	{ 'delay'		=> { 'spec'		=> '=i',
@@ -840,9 +841,9 @@ sub msg_format( $ ){
 
 # ---------------------------------------------------------------------
 sub msg_version(){
-	print ' NanoWatchdog v5.2015
- Copyright (C) 2015, Pierre Wieser <pwieser@trychlos.org>
-';
+	print " NanoWatchdog v${my_version}
+ Copyright (C) 2015, Pierre Wieser <pwieser\@trychlos.org>
+";
 }
 
 # ---------------------------------------------------------------------
@@ -1374,13 +1375,14 @@ sub send_boot_mail( $ ){
 			}
 			#print "reason='$reason'\n";
 			$message = "
- It is very probable that last reboot has been initiated by NanoWatchdog,
- as I have found that last reset event is still left unacknowledged.
+ Hi,
+ I am NanoWatchdog v${my_version}.
+ It is very probable that last reboot has been initiated on my own request,
+ as I have found that the last reset event is still left unacknowledged.
 
  Boot up status:
 ${local_status}
-
- Reason was: ${reason}.";
+";
 		}
 		if( length( $message )){
 			my $msg = MIME::Lite->new(
