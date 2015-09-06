@@ -3,11 +3,25 @@
  Summary
  =======
  
+   Version 6.2015
    Version 5.2015
    Version 4.2015
    Version 2015.3
    Version 2015.2
    Version 2015.1
+
+-----------------------------------------------------------------------
+ Version 6.2015
+ ==============
+
+ Release date: 2015- 9- 6
+
+ NanoWatchdog client:
+               - fix help message.
+
+ NanoWatchdog daemon:
+               - review the mail sent at boot up.
+               - improve help message.
 
 -----------------------------------------------------------------------
  Version 5.2015
