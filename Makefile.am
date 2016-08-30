@@ -20,6 +20,7 @@ SUBDIRS = \
 	Arduino			\
 	doc				\
 	etc				\
+	maintainer		\
 	pcb				\
 	src				\
 	$(NULL)
@@ -32,20 +33,12 @@ dist_doc_DATA = \
 uninstall-local:
 	rmdir $(DESTDIR)$(docdir)
 
-# just run "make install-txz" and that's done 
+# this target is to be run from maintainer/make_install_txz.sh
 install-txz:
-	(cd $(top_srcdir) && \
-	 my_topdir=`pwd` && \
-	 tmpdir=`mktemp -d /tmp/tmpXXXX` && \
-	 mkdir $${tmpdir}/_build && \
-	 cd $${tmpdir}/_build && \
-	 $${my_topdir}/configure --prefix=/ && \
-	 make && \
-	 make DESTDIR=$${tmpdir}/_install/$(PACKAGE)-$(VERSION) install && \
-	 cd $${tmpdir}/_install && \
-	 tar -cvJf - * > /tmp/$(PACKAGE)-$(VERSION)-install.tar.xz && \
-	 cd /tmp && \
-	 rm -fr $${tmpdir})
+	make && \
+	make DESTDIR="$(TMPDIR)/_install/$(PACKAGE)-$(VERSION)" install && \
+	cd "$(TMPDIR)/_install" && \
+	tar -cvJf - * > "/tmp/$(PACKAGE)-$(VERSION)-install.tar.xz"
 	@echo "==="
 	@echo "=== /tmp/$(PACKAGE)-$(VERSION)-install.tar.xz available"
 	@echo "==="

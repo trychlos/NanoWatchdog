@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# nanowatchdog Startup script for the Nanowatchdog daemon
+# chkconfig: - 86 15
+# description: Arduino-based watchdog daemon
+# processname: nanowatchdog
+# config: /etc/nanowatchdog.conf
+# pidfile: /var/run/nanowatchdog.pid
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+ARGS=""
+PROG="nanowatchdog"
+PROCESS="nw-daemon.pl"
+CONFIG="/etc/nanowatchdog.conf"
+
+start () {
+	echo -n $"Starting ${PROG}: "
+	if [ -r "${CONFIG}" ]; then
+		LIBEXECDIR/nw-daemon.pl -verbose
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/${PROG}
+	fi
+}
+
+stop () {
+	echo -n $"Stopping ${PROG}: "
+	killproc ${PROCESS}
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/${PROG}
+}
+
+# See how we were called.
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		status ${PROG}
+		;;
+	restart)
+		stop
+		sleep 1
+		start
+		;;
+	*)
+		echo $"Usage: $0 {start|stop|status|restart}"
+		exit 1
+esac
+
+exit $?
+
+# vim:syntax=sh

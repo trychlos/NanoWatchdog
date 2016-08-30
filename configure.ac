@@ -16,11 +16,12 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 #
-# use: "autoreconf" to generate configure.
+# use: "autoreconf && maintainer/make_install_txz.sh" to generate a
+# nanowatchdog-x.yy.txz tarball installable via Ansible.
 
 AC_PREREQ(2.59)
 
-AC_INIT([NanoWatchdog],[6.2015],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
+AC_INIT([NanoWatchdog],[7.2016],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
 
 # unable to define something as 'no-dist-gz'
 AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
@@ -34,11 +35,14 @@ AC_CONFIG_FILES([
 	Arduino/NanoWatchdog/Makefile
 	doc/Makefile
 	etc/Makefile
+	etc/init.d/Makefile
+	etc/init.d/nanowatchdog
 	etc/systemd/Makefile
 	etc/systemd/system/Makefile
 	etc/systemd/system/nanowatchdog.service
 	etc/udev/Makefile
 	etc/udev/rules.d/Makefile
+	maintainer/Makefile
 	pcb/Makefile
 	src/Makefile
 	src/client/Makefile

@@ -15,16 +15,3 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
-
-SUBDIRS = \
-	init.d					\
-	systemd					\
-	udev					\
-	$(NULL)
-
-confdir = $(sysconfdir)
-
-dist_conf_DATA = \
-	nanowatchdog.conf		\
-	watchdog.conf			\
-	$(NULL)

@@ -1,4 +1,4 @@
-# @(#) NanoWatchdog
+#!/bin/bash
 #
 # Copyright (C) 2015 Pierre Wieser (see AUTHORS)
 #
@@ -15,16 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+#
 
-SUBDIRS = \
-	init.d					\
-	systemd					\
-	udev					\
-	$(NULL)
+if [ ! -r configure.ac ]; then
+	echo "[error] this script must be run from TOPDIR"
+	exit 1
+fi
 
-confdir = $(sysconfdir)
-
-dist_conf_DATA = \
-	nanowatchdog.conf		\
-	watchdog.conf			\
-	$(NULL)
+my_topdir="`pwd`"
+tmpdir="`mktemp -d /tmp/tmpXXXX`"
+mkdir -p "${tmpdir}/_build"
+(
+ cd "${tmpdir}/_build" &&
+ "${my_topdir}/configure" --prefix=/ &&
+ make TMPDIR="${tmpdir}" install-txz
+)
+rm -fr "${tmpdir}"

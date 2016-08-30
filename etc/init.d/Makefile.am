@@ -16,15 +16,11 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-SUBDIRS = \
-	init.d					\
-	systemd					\
-	udev					\
+servicedir = $(sysconfdir)/rc.d/init.d
+
+service_DATA = \
+	nanowatchdog		\
 	$(NULL)
 
-confdir = $(sysconfdir)
-
-dist_conf_DATA = \
-	nanowatchdog.conf		\
-	watchdog.conf			\
-	$(NULL)
+install-data-hook:
+	sed -i -e 's|LIBEXECDIR|$(libexecdir)|' $(DESTDIR)$(servicedir)/nanowatchdog
