@@ -24,13 +24,7 @@
   15 2015- 6-21 have several verbose levels, so that command-line options
                 and configuration parameters may be displayed, while
                 getting rid of serial intput/output traces
-
-  20 2015- 6-29 setting a command-line option through management daemon
-                command interface doesn't update corresponding configu-
-                ration parameter (if any)
-
-  27 2015- 7-24 autoconf: configure pidfile pathname
-     2015- 7-24 see 'pidfile' branch - doesn't work at the moment
+     2016- 9- 8 done
 
   30
 
@@ -85,6 +79,12 @@
   19 2015- 6-24 Add a HELP command to nw-daemon commands
      2015- 6-29 done for 2015.2
 
+  20 2015- 6-29 setting a command-line option through management daemon
+                command interface doesn't update corresponding configu-
+                ration parameter (if any)
+     2016- 9- 8 cancelled: the command interface of the daemon does not
+                let the user update the configuration 
+
   21 2015- 7- 9 configure 'from' field of the mail
                 (do not only rely on hostname)
      2015- 7- 9 done for 2015.3
@@ -108,6 +108,10 @@
 
   26 2015- 7-20 shift 2 spaces rights the four first lines of status
      2015- 7-24 done for 2015.3
+
+  27 2015- 7-24 autoconf: configure pidfile pathname
+     2015- 7-24 see 'pidfile' branch - doesn't work at the moment
+     2016- 9- 8 cancelled: no use case
 
   28 2015- 7-25 configure.ac: use no-dist-gzip
      2015- 8-19 done for 4.2015

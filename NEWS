@@ -12,6 +12,18 @@
    Version 2015.1
 
 -----------------------------------------------------------------------
+ Version 8.2016
+ ==============
+
+ Release date: 
+
+ NanoWatchdog client:
+               - fix respective communication ports of daemon vs. board.
+
+ NanoWatchdog daemon:
+               - have several verbosity levels (todo #15).
+
+-----------------------------------------------------------------------
  Version 7.2016
  ==============
 

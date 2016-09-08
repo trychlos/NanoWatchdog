@@ -103,10 +103,10 @@ my $option_specs = [					# the options specification array
 						 'def'		=> "no",
 						 'value'	=> false,
 						 'help'		=> "print the program version, and gracefully exit" }},
-	{ 'verbose'		=> { 'spec'		=> '!',
-						 'def'		=> "no",
-						 'value'	=> false,
-						 'help'		=> "run verbosely",
+	{ 'verbose'		=> { 'spec'		=> '=i',
+						 'def'		=> "2",
+						 'value'	=> 2,
+						 'help'		=> "specify the verbosity level",
 						 'ref'		=> \$opt_verbose }},
 	# run behavior
 	{ 'config'		=> { 'spec'		=> '=s',
@@ -188,10 +188,47 @@ my $option_help_post = " The daemon recognizes following commands:
  This daemon handles the following signals:
     HUP          reloads the configuration file
     TERM         terminates the daemon
-    USR1         restart the NanoWatchdog";
+    USR1         restart the NanoWatchdog
+The daemon handles following cumulative verbosity levels:
+	    1: dump configuration on hup signal
+	    2: when terminating the daemon (default)
+	    4: dump configuration on startup
+	    8: dump command-line options on startup
+	   16: when sending the startup mail
+	   32: startup informations
+	   64: configuration debug level 1
+	  128: configuration debug level 2
+	  256: client informations
+	  512: client debug level 1
+	 1024: client debug level 2
+	 2048: board informations
+	 4096: board debug level 1
+	 8192: board debug level 2
+	16384: loop debug level 1
+	32768: loop debug level 2.";
 
 # origin of option values
 use constant { OPT_DEFAULT => 0, OPT_CMDLINE => 1, OPT_COMMAND => 2 };
+
+# verbosity levels
+use constant {
+	LOG_CONFIG_HUP    => 1 << 0,			#     1: dump configuration on hup signal
+	LOG_INFO_QUIT     => 1 << 1,			#     2: when terminating the daemon (default)
+	LOG_CONFIG_START  => 1 << 2,			#     4: dump configuration on startup
+	LOG_CMDLINE_START => 1 << 3,			#     8: dump command-line options on startup
+	LOG_MAIL_START    => 1 << 4,			#    16: when sending the startup mail
+	LOG_INFO_START    => 1 << 5,			#    32: startup informations
+	LOG_CONFIG_DEBUG1 => 1 << 6,			#    64: configuration debug level 1
+	LOG_CONFIG_DEBUG2 => 1 << 7,			#   128: configuration debug level 2
+	LOG_CLIENT_INFO   => 1 << 8,			#   256: client informations
+	LOG_CLIENT_DEBUG1 => 1 << 9,			#   512: client debug level 1
+	LOG_CLIENT_DEBUG2 => 1 << 10,			#  1024: client debug level 2
+	LOG_BOARD_INFO    => 1 << 11,			#  2048: board informations
+	LOG_BOARD_DEBUG1  => 1 << 12,			#  4096: board debug level 1
+	LOG_BOARD_DEBUG2  => 1 << 13,			#  8192: board debug level 2
+	LOG_LOOP_DEBUG1   => 1 << 14,			# 16384: loop debug level 1
+	LOG_LOOP_DEBUG2   => 1 << 15,			# 32768: loop debug level 2
+};
 
 # Configuration parameters definitions
 # ====================================
@@ -295,14 +332,14 @@ sub catch_hup(){
 	msg "HUP signal handler: reloading the configuration file ".$opts->{'config'}{'value'};
 	$parms = {};
 	if( config_read( $parm_specs, $parms, $opts->{'config'}{'value'}, $opts )){
-		config_dump( $parm_specs, $parms ) if $opt_verbose;
+		config_dump( $parm_specs, $parms ) if $opt_verbose & LOG_CONFIG_HUP;
 	}
 }
 
 # ---------------------------------------------------------------------
 # handle Ctrl-C
 sub catch_int(){
-	msg( "exiting on Ctrl-C" ) if $opt_verbose;
+	msg( "exiting on Ctrl-C" ) if $opt_verbose & LOG_INFO_QUIT;
 	$errs = 1;
 	catch_term();
 }
@@ -316,7 +353,7 @@ sub catch_term(){
 	}
 	$socket_serial->close() if defined( $socket_serial );
 	$socket_daemon->close() if defined( $socket_daemon );
-	msg( "NanoWatchdog terminating..." ) if $opt_verbose || $background;
+	msg( "NanoWatchdog terminating..." ) if ( $opt_verbose & LOG_INFO_QUIT ) || $background;
 	exit;
 }
 
@@ -694,7 +731,7 @@ sub config_read( $$$$ ){
 		if( defined( $local_specs->{$key}{'min'} ) && defined( $local_config->{$key} )){
 			if( $local_config->{$key} < $local_specs->{$key}{'min'} && !$local_opts->{'force'}{'value'} ){
 				msg( "$key: value=".$local_config->{$key}." < min=".$local_specs->{$key}{'min'}
-					." and force is not set: forcing the value to min" ) if $opt_verbose;
+					." and force is not set: forcing the value to min" );
 				$local_config->{$key} = $local_specs->{$key}{'min'};
 			}
 		}
@@ -702,7 +739,7 @@ sub config_read( $$$$ ){
 		if( defined( $local_specs->{$key}{'max'} ) && defined( $local_config->{$key} )){
 			if( $local_config->{$key} > $local_specs->{$key}{'max'} && !$local_opts->{'force'}{'value'} ){
 				msg( "$key: value=".$local_config->{$key}." > max=".$local_specs->{$key}{'max'}
-					." and force is not set: forcing the value to max" ) if $opt_verbose;
+					." and force is not set: forcing the value to max" );
 				$local_config->{$key} = $local_specs->{$key}{'max'};
 			}
 		}
@@ -717,11 +754,10 @@ sub config_read_file( $$ ){
 	my $local_path = shift;
 	my $local_cfg = shift;
 	if( !-r $local_path ){
-		msg( "configuration file ${local_path} not found: using default values" )
-				if $opt_verbose;
+		msg( "configuration file ${local_path} not found: using default values" );
 	} else {
 		msg( "reading the configuration file ${local_path}" )
-				if $opt_verbose;
+				if $opt_verbose & LOG_CONFIG_DEBUG1;
 		open( my $fh, '<:encoding(UTF-8)', $local_path )
 				or die "unable to open $local_path file: $!\n";
 		while( <$fh> ){
@@ -865,7 +901,7 @@ sub open_socket( $$ ){
 	fcntl( $socket, F_GETFL, O_NONBLOCK ) 
 			or die "cannot set non-blocking flag for the TCP socket: $!\n";
 	msg( "server waiting for client connection on $local_ip:$local_port" )
-			if $opt_verbose;
+			if $opt_verbose & LOG_CLIENT_DEBUG1;
 
 	return( $socket );
 }
@@ -886,7 +922,7 @@ sub open_serial(){
 	$serial->dtr_active( false );
 	$serial->write_settings() or die "unable to set serial bus settings: $!\n";
 	msg( "opening ".$parms->{'device'}."(".$parms->{'baudrate'}." bps)" )
-			if $opt_verbose;
+			if $opt_verbose & LOG_BOARD_DEBUG1;
 
 	return( $serial );
 }
@@ -969,12 +1005,12 @@ sub read_command( $$ ){
 	    # get information about the newly connected client
 	    my $client_address = $out_client->peerhost();
 	    my $client_port = $out_client->peerport();
-	    msg( "connection from $client_address:$client_port" ) if $opt_verbose;
+	    msg( "connection from $client_address:$client_port" ) if $opt_verbose & LOG_CLIENT_DEBUG2;
 
 	    # read up to 4096 characters from the connected client
 	    $$local_data = "";
 	    $out_client->recv( $$local_data, 4096 );
-	    msg( "received data: '$$local_data'" ) if $opt_verbose;
+	    msg( "received data: '$$local_data'" ) if $opt_verbose & LOG_CLIENT_DEBUG2;
     }
     return( $out_client );
 }
@@ -987,7 +1023,7 @@ sub write_answer( $$ ){
 
     # write response data to the connected client
     # if the serial port is not opened, then answer the command
-    msg( "answering '${local_answer}' to the client" ) if $opt_verbose;
+    msg( "answering '${local_answer}' to the client" ) if $opt_verbose & LOG_CLIENT_DEBUG2;
     $local_client->send( "$local_answer\n" );
 
     # notify client that response has been sent
@@ -1001,12 +1037,12 @@ sub send_serial( $ ){
     my $command = shift;
 	my $buffer = "";
 	msg( "sending command to ".$parms->{'device'}.": '$command'" )
-			if $opt_verbose;
+			if $opt_verbose & LOG_BOARD_DEBUG2;
     if( $opts->{'serial'}{'value'} ){
     	# send the command
 	    my $out_count = $serial->write( "$command\n" );
 	    msg( "${out_count} chars written to ".$parms->{'device'} )
-	    		if $opt_verbose;
+	    		if $opt_verbose & LOG_BOARD_DEBUG2;
 
 	    # receives the answer
 		$serial->read_char_time(0);     # don't wait for each character
@@ -1020,10 +1056,11 @@ sub send_serial( $ ){
 				$buffer .= $saw;
 			} else {
 				$timeout--;
-	        }
-	 	}
+			}
+		}
 		$buffer =~ s/\x0D\x0A$//;
-	 	msg( "received '$buffer' ($chars chars) answer from ".$parms->{'device'} ) if $opt_verbose;
+		msg( "received '$buffer' ($chars chars) answer from ".$parms->{'device'} )
+				if $opt_verbose & LOG_BOARD_DEBUG2;
     }
     return( $buffer );
 }
@@ -1037,7 +1074,7 @@ sub check_interface( $ ){
     my $reboot = false;
     if( !@{$parms->{'interface'}} ){
     	msg( "interface(s) check is not enabled" )
-    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    			if ( $opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'};
     } else {
 	    foreach( @{$parms->{'interface'}} ){
 	    	if( !$reboot ){
@@ -1052,7 +1089,7 @@ sub check_interface( $ ){
 		    	}
 	    		$reboot = ( $rx+$tx == 0 );
 	    		msg( "interface=$_, rx=$rx, tx=$tx" )
-	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+	    			if $reboot || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 	    	}
 	    }
 	    $reason_code = 23 if $reboot;
@@ -1107,13 +1144,13 @@ sub check_loadavg( $ ){
 	    			."parm:max-load-15=".config_str_value( $parms->{'max-load-15'} )
 	    			.", avg10=$avg10, "
 	    			."processes=${processes}, lastpid=${lastpid}" )
-			    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+			    			if $reboot || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 	    } else {
 	    	msg( "unable to open /proc/loadavg: $!" );
 	    }
     } else {
     	msg( "load average check is not enabled" )
-				if $opt_verbose && $tick >= $parms->{'logtick'};
+				if ( $opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'};
     }
     return( $reboot );
 }
@@ -1144,13 +1181,13 @@ sub check_memory( $ ){
 	    	$reboot = true if $swap_free < $parms->{'min-memory'};
 		    $reason_code = 19 if $reboot;
 	    	msg( " parm:min-memory=".$parms->{'min-memory'}.", swap_free=$swap_free" )
-	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+	    			if $reboot || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 	    } else {
 	    	msg( "unable to open /proc/meminfo: $!" );
 	    }
     } else {
     	msg( "virtual memory check is not enabled" )
-				if $opt_verbose && $tick >= $parms->{'logtick'};
+				if ( $opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'};
     }
     return( $reboot );
 }
@@ -1165,7 +1202,7 @@ sub check_pidfile( $ ){
     my $reboot = false;
     if( !@{$parms->{'pidfile'}} ){
     	msg( "pid file(s) check is not enabled" )
-    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    			if ( $opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'};
     } else {
 	    foreach( @{$parms->{'pidfile'}} ){
 	    	if( !$reboot ){
@@ -1179,7 +1216,7 @@ sub check_pidfile( $ ){
 		    		#print "pid=$pid, exists=".( $exists ? "true":"false" )."\n";
 		    		$reboot = !$exists;
 		    		msg( "pidfile=".$_.", pid=$pid, exists=".( $exists ? "true":"false" ))
-		    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+		    			if $reboot || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 		    	} else {
 		    		msg( "warning: unable to open ".$_." for reading: $!" );
 		    	}
@@ -1198,14 +1235,14 @@ sub check_ping( $ ){
     my $reboot = false;
     if( !@{$parms->{'ping'}} ){
     	msg( "ping(s) check is not enabled" )
-    			if $opt_verbose && $tick >= $parms->{'logtick'};
+    			if ( $opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'};
     } else {
 	    foreach( @{$parms->{'ping'}} ){
 	    	if( !$reboot ){
 		    	my $alive = ( system( "ping -c1 $_ 1>/dev/null 2>&1" ) == 0 );
 	    		$reboot = !$alive;
 	    		msg( "ipv4=$_, alive=".( $alive ? "true":"false" ))
-	    			if $reboot || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+	    			if $reboot || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 	    	}
 	    }
 	    $reason_code = 22 if $reboot;
@@ -1242,7 +1279,7 @@ sub check_temperature_wanted( $$ ){
 	    	$line /= 1000;
 	    	$reboot_local = ( $line > $parms->{'max-temperature'} );
 	    	msg( "parm:max-temperature=".$parms->{'max-temperature'}.", $ftemp:temperature=${line}" ) 
-    			if $reboot_local || ( $opt_verbose && $tick >= $parms->{'logtick'} );
+    			if $reboot_local || (( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'} );
 	    	$$reboot_ref |= $reboot_local;
 	    } else {
 	    	msg( "unable to open $ftemp: $!" );
@@ -1274,13 +1311,14 @@ sub reboot(){
 # this is the actual code
 # isolated in a function to be used by the child when in daemon mode
 sub run_server(){
+	msg( "starting NanoWatchdog daemon..." ) if $background || $opt_verbose & LOG_INFO_START;
+	
 	# command-line options
-	cmdline_dump( $option_specs, $opts ) if $opt_verbose;
-	#print "opt_verbose=".($opt_verbose ? "true":"false")."\n";
+	cmdline_dump( $option_specs, $opts ) if $opt_verbose & LOG_CMDLINE_START;
 
 	# configuration parameters
 	return if !config_read( $parm_specs, $parms, $opts->{'config'}{'value'}, $opts );
-	config_dump( $parm_specs, $parms ) if $opt_verbose;
+	config_dump( $parm_specs, $parms ) if $opt_verbose & LOG_CONFIG_START;
 
 	# write pid file if requested to
 	write_pid();
@@ -1347,7 +1385,7 @@ sub run_server(){
 					reboot();
 			}
 		    msg( "going to sleep for ".$parms->{'interval'}." sec." )
-		    		if $opt_verbose && $tick >= $parms->{'logtick'};
+		    		if ( $opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'};
 		    $tick = 0 if $tick >= $parms->{'logtick'};
 		}
 	}
@@ -1394,7 +1432,7 @@ ${local_status}
 			);
 			$msg->send;
 			msg( "send-mail=".$parms->{'send-mail'}.", ack=$ack: ".
-					"mail sent to ".$parms->{'admin'} ) if $opt_verbose;
+					"mail sent to ".$parms->{'admin'} ) if $opt_verbose & LOG_MAIL_START;
 		}
 		if( $ack eq "no" ){
 			send_serial( "ACKNOWLEDGE 0" );
@@ -1408,7 +1446,7 @@ ${local_status}
 # return true if the NanoWatchdog board has been successfully
 # initialized
 sub start_watchdog(){
-	msg( "starting NanoWatchdog board..." ) if $opt_verbose;
+	msg( "starting NanoWatchdog board..." ) if $opt_verbose & LOG_BOARD_INFO;
 	my $command;
 
 	# set whether we are in test mode
@@ -1459,7 +1497,7 @@ sub write_pid(){
 		if( open( my $fh, '>', $parms->{'pid-file'} )){
 			print $fh $$."\n";
 			close $fh;
-			msg( "pid written in ".$parms->{'pid-file'} ) if $opt_verbose;
+			msg( "pid written in ".$parms->{'pid-file'} ) if $opt_verbose & LOG_INFO_START;
 		} else {
 			msg( "warning: unable to open ".$parms->{'pid-file'}." for write: $!" );
 		}
@@ -1475,7 +1513,7 @@ sub write_status( $ ){
 		if( open( my $fh, '>', $parms->{'status-file'} )){
 			print $fh $local_status."\n";
 			close $fh;
-			msg( "status written in ".$parms->{'status-file'} ) if $opt_verbose;
+			msg( "status written in ".$parms->{'status-file'} ) if $opt_verbose & LOG_INFO_START;
 		} else {
 			msg( "warning: unable to open ".$parms->{'status-file'}." for write: $!" );
 		}
@@ -1494,13 +1532,15 @@ $SIG{USR1} = \&catch_usr1;
 exit if is_running();
 exit if !cmdline_get_options( $option_specs, $opts );
 
-my $child_pid = Proc::Daemon::Init() if $opts->{'daemon'}{'value'};
-msg( "child_pid=${child_pid}" ) if $opts->{'daemon'}{'value'} && $opt_verbose;
+my $child_pid = 0;
+if( $opts->{'daemon'}{'value'} ){
+	$child_pid = Proc::Daemon::Init() ;
+	msg( "child_pid=${child_pid}" ) if $opt_verbose & LOG_INFO_START;
+}
 # specific daemon code
-if( !$child_pid ){
+if( $opts->{'daemon'}{'value'} && !$child_pid ){
 	$background = true;
 	openlog( $me, "nofatal,pid", LOG_DAEMON );
-	msg( "NanoWatchdog starting..." );
 }
 run_server() if !$opts->{'daemon'}{'value'} or !$child_pid;
 
@@ -1510,6 +1550,6 @@ END {
 	# this last sentence has no chance of being printed if the program
 	# exits because of already running (because command-line options
 	# have not been set at this time).
-	msg( "exiting with code $errs" ) if $opt_verbose;
+	msg( "exiting with code $errs" ) if $opt_verbose & LOG_INFO_QUIT;
 	exit $errs;
 }
