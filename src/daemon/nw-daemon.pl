@@ -20,8 +20,9 @@
 # This work is based on SerialCS, from the same author.
 #
 # This program takes options from command-line, and they are set in
-# $opts. The program also takes parameters from configuration file(s),
-# and those are set in $parms.
+# $opts.
+# The program also takes parameters from configuration file(s), and
+# those are set in $parms.
 # Values of configuration parameters which are overriden by a command-
 # line option are also set in $parms.
 
@@ -40,7 +41,7 @@ use Sys::Syslog qw(:standard :macros);
 use constant { true => 1, false => 0 };
 
 my $me = basename( $0 );				# program base name
-my $my_version = "6.2015";
+my $my_version = "8.2016";
 my $errs = 0;							# exit code
 my $nbopts = $#ARGV;					# command-line args count
 
@@ -1407,7 +1408,7 @@ ${local_status}
 # return true if the NanoWatchdog board has been successfully
 # initialized
 sub start_watchdog(){
-	msg( "starting watchdog..." ) if $opt_verbose;
+	msg( "starting NanoWatchdog board..." ) if $opt_verbose;
 	my $command;
 
 	# set whether we are in test mode
