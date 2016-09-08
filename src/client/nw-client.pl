@@ -23,7 +23,7 @@ use Getopt::Long;
 use IO::Socket::INET;
 
 my $me = basename( $0 );
-my $my_version = "6.2015";
+my $my_version = "8.2016";
 use constant { true => 1, false => 0 };
  
 # auto-flush on socket
@@ -40,8 +40,8 @@ my $opt_verbose = false;
 
 my $opt_listen_ip_def = "127.0.0.1";
 my $opt_listen_ip = $opt_listen_ip_def;
-my $opt_listen_board_def = 7778;
-my $opt_listen_port_def = 7777;
+my $opt_listen_board_def = 7777;
+my $opt_listen_port_def = 7778;
 my $opt_listen_port = $opt_listen_port_def;
 my $opt_command_def = "";
 my $opt_command = $opt_command_def;
