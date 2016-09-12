@@ -15,13 +15,14 @@
  Version 8.2016
  ==============
 
- Release date: 
+ Release date: 2016- 9-12
 
  NanoWatchdog client:
                - fix respective communication ports of daemon vs. board.
 
  NanoWatchdog daemon:
                - have several verbosity levels (todo #15).
+               - new 'SET VERBOSE <n>' command: modify verbosity level at runtime.
 
 -----------------------------------------------------------------------
  Version 7.2016
