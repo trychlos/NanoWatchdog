@@ -19,7 +19,7 @@ CONFIG="/etc/nanowatchdog.conf"
 start () {
 	echo -n $"Starting ${PROG}: "
 	if [ -r "${CONFIG}" ]; then
-		LIBEXECDIR/nw-daemon.pl -verbose
+		LIBEXECDIR/nw-daemon.pl -nohelp
 		RETVAL=$?
 		echo
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/${PROG}

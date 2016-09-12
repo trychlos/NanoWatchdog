@@ -19,6 +19,9 @@
 
  Release date: 
 
+ Bugfixes:
+               - Fix the daemon startup command-line options.
+
  Packaging:
                - simplify the src/ hierarchy.
 
