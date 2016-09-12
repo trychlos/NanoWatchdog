@@ -19,6 +19,9 @@
 
  Release date: 
 
+ Packaging:
+               - simplify the src/ hierarchy.
+
 -----------------------------------------------------------------------
  Version 8.2016
  ==============
@@ -88,18 +91,15 @@
                - have a standard 'configure' script (todo #24).
 
  NanoWatchdog configuration:
-
                - add send-from parameter (todo #21).
                - add pid-file parameter which fixes the daemon startup
                  (todo #22).
 
  NanoWatchdog daemon:
-
                - add a trailing line feed to the nanowatchdog status
                  file (todo #25).
 
  NanoWatchdog board:
-
                - remove two chars shift from STATUS output (todo #26).
 
  PCB:          v5
@@ -111,17 +111,14 @@
  Release date: 2015-06-29
 
  NanoWatchdog board:
-
                - REINIT command is deprecated (todo #18).
 
  NanoWatchdog management daemon:
-
                - commands accept leading and trailing spaces.
                - define HELP command (todo #19).
                - doesn't check min/max values on unset parameters (todo #16).
 
  NanoWatchdog as a systemd service:
-
                - lets create a PID file in /var/run hierarchy.
 
  PCB:          v5

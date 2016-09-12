@@ -16,7 +16,10 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-SUBDIRS = \
-	client			\
-	daemon			\
+dist_bin_SCRIPTS = \
+	nw-client.pl						\
+	$(NULL)
+
+dist_libexec_SCRIPTS = \
+	nw-daemon.pl						\
 	$(NULL)

@@ -26,7 +26,7 @@ AC_INIT([NanoWatchdog],[9.2016],[pwieser@trychlos.org],,[https://trychlos.github
 # unable to define something as 'no-dist-gz'
 AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
 
-AC_CONFIG_SRCDIR([src/daemon/nw-daemon.pl])
+AC_CONFIG_SRCDIR([src/nw-daemon.pl])
 
 AC_CONFIG_FILES([
 	Makefile
@@ -45,8 +45,6 @@ AC_CONFIG_FILES([
 	maintainer/Makefile
 	pcb/Makefile
 	src/Makefile
-	src/client/Makefile
-	src/daemon/Makefile
 ])
 
 AC_OUTPUT
