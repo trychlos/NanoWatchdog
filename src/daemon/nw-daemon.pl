@@ -626,7 +626,7 @@ sub cmdline_help( $$ ){
 			print $_->{$key}{'help'} if defined( $_->{$key}{'help'} );
 			# display default value
 			if( defined( $_->{$key}{'parm'} )){
-				my $parm_def = parm_get_definition_by_name( $local_parms, $_->{$key}{'parm'} );
+				my $parm_def = $local_parms->{$_->{$key}{'parm'}};
 				if( defined( $parm_def ) && defined( $parm_def->{'def'} )){
 					if( $parm_def->{'type'} == PARM_TYPE_BOOL ){
 						print " [".( $parm_def->{'def'} ? "yes":"no" )."]";
@@ -649,7 +649,7 @@ sub cmdline_opt_is_bool( $$ ){
 	my $local_parms = shift;			# a ref to the global configuration parameters hash
 	my $local_opt = shift;				# a ref to the option definition
 	if( defined( $local_opt->{'parm'} )){
-		my $parm_def = parm_get_definition_by_name( $local_parms, $local_opt->{'parm'} );
+		my $parm_def = $local_parms->{$local_opt->{'parm'}};
 		if( defined( $parm_def )){
 			return( $parm_def->{'type'} == PARM_TYPE_BOOL );
 		}
