@@ -21,12 +21,25 @@
 
   14 2015- 6-15 test-directory: deals with user-defined scripts
 
-  15 2015- 6-21 have several verbose levels, so that command-line options
-                and configuration parameters may be displayed, while
-                getting rid of serial intput/output traces
-     2016- 9- 8 done
+  30 2016- 9-10 change 'ip' to 'listener'
+                (configuration file + command-line + ansible)
 
-  30
+  31 2016- 9-10 change 'pid-file' to 'daemon-pid'
+                (configuration file + command-line + ansible)
+
+  32 2016- 9-10 change 'status-file' to 'board-status'
+                (configuration file + ansible)
+
+  33 2016- 9-10 change 'open-timeout' to 'board-timeout-open'
+                (configuration file + ansible)
+
+  34 2016- 9-10 change 'read-timeout' to 'board-timeout-read'
+                (configuration file + ansible)
+
+  35 2016- 9-10 change 'serial' to 'board'
+                (command-line + ansible)
+
+  36
 
 -----------------------------------------------------------------------
  DONE
@@ -64,6 +77,11 @@
   13 2015- 6-15 admin: send a mail on start if watchdog was as the
                 origin of the last reboot 
      2015- 6-17 done
+
+  15 2015- 6-21 have several verbose levels, so that command-line options
+                and configuration parameters may be displayed, while
+                getting rid of serial intput/output traces
+     2016- 9- 8 done
 
   16 2015- 6-21 when a default parameter comes from a function and has
                 min/max values, then min/max checks should test
