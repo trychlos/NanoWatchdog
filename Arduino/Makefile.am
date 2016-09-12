@@ -15,6 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
+#
+# Arduino code and libraries are to be specifically installed to point
+# to this Eclipse project:
+#
+# $ cd ~/data/Arduino
+# $ ln -s ~/data/eclipse/NanoWatchdog/Arduino/NanoWatchdog
+# $ cd libraries
+# $ ln -s ~/data/eclipse/NanoWatchdog/Arduino/lib NanoWatchdog
 
 SUBDIRS = \
 	lib						\

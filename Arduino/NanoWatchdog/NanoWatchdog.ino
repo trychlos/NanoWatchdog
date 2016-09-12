@@ -433,7 +433,7 @@ bool cmdSetDate( String command )
  * Set the reboot delay parameter
  * syntaxe: SET DELAY <value>
  *   the delay is seconds since the last ping at which the reset is launched
- *   value = 1..32767
+ *   value = 1..65535
  *   default = 60
  *
  * Returns: true if the command has been successfully executed, false else.
