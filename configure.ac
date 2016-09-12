@@ -38,8 +38,7 @@ AC_CONFIG_FILES([
 	etc/init.d/Makefile
 	etc/init.d/nanowatchdog
 	etc/systemd/Makefile
-	etc/systemd/system/Makefile
-	etc/systemd/system/nanowatchdog.service
+	etc/systemd/nanowatchdog.service
 	etc/udev/Makefile
 	etc/udev/rules.d/Makefile
 	maintainer/Makefile

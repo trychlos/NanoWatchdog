@@ -20,9 +20,10 @@
  Release date: 
 
  Bugfixes:
-               - Fix the daemon startup command-line options.
+               - fix the daemon startup command-line options.
 
  Packaging:
+               - simplify the etc/systemd/ hierarchy.
                - simplify the src/ hierarchy.
 
 -----------------------------------------------------------------------

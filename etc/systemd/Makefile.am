@@ -16,6 +16,11 @@
 # along with NanoWatchdog; if not, see
 # <http://www.gnu.org/licenses/>.
 
-SUBDIRS = \
-	system					\
+servicedir = $(sysconfdir)/systemd/system
+
+service_DATA = \
+	nanowatchdog.service				\
 	$(NULL)
+
+install-data-hook:
+	sed -i -e 's|LIBEXECDIR|$(libexecdir)|' $(DESTDIR)$(servicedir)/nanowatchdog.service
