@@ -23,7 +23,7 @@ use Getopt::Long;
 use IO::Socket::INET;
 
 my $me = basename( $0 );
-my $my_version = "8.2016";
+my $my_version = "10.2016";
 use constant { true => 1, false => 0 };
  
 # auto-flush on socket

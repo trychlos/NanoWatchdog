@@ -38,7 +38,7 @@ use Sys::Syslog qw(:standard :macros);
 use constant { true => 1, false => 0 };
 
 my $me = basename( $0 );				# program base name
-my $my_version = "8.2016";
+my $my_version = "10.2016";
 my $errs = 0;							# exit code
 my $nbopts = $#ARGV;					# command-line args count
 

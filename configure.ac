@@ -21,7 +21,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([NanoWatchdog],[9.2016],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
+# when upgrading this version, do not omit to also upgrade the version
+# in src/nw-client.pl / src/nw-daemon.pl
+AC_INIT([NanoWatchdog],[10.2016],[pwieser@trychlos.org],,[https://trychlos.github.io/NanoWatchdog])
 
 # unable to define something as 'no-dist-gz'
 AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
