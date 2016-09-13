@@ -21,6 +21,7 @@
 
  Bugfixes:
                - fix the daemon startup command-line options.
+               - use @libexecdir@.
 
  Packaging:
                - simplify the etc/systemd/ hierarchy.

@@ -27,7 +27,7 @@ tmpdir="`mktemp -d /tmp/tmpXXXX`"
 mkdir -p "${tmpdir}/_build"
 (
  cd "${tmpdir}/_build" &&
- "${my_topdir}/configure" --prefix=/ &&
+ "${my_topdir}/configure" --prefix=/ --libexecdir=/libexec &&
  make TMPDIR="${tmpdir}" install-txz
 )
 rm -fr "${tmpdir}"
