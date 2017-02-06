@@ -357,7 +357,7 @@ bool cmdReboot( String command )
  * Reinit the watchdog.
  * This is only useful when in development mode
  *
- * Returns: true;
+ * Returns: true.
  */
 bool cmdReinit()
 {

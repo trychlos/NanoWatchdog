@@ -39,7 +39,10 @@
   35 2016- 9-10 change 'serial' to 'board'
                 (command-line + ansible)
 
-  36
+  36 2017- 1- 8 On Ctrl+C:
+                Use of uninitialized value $count in numeric gt (>) at ./nw-daemon.pl line 1206
+
+  37
 
 -----------------------------------------------------------------------
  DONE
