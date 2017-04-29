@@ -1,4 +1,4 @@
- NanoWatchdog - README
+ NanoWatchdog - README.md
 
  Summary
  =======
@@ -327,4 +327,4 @@
 
 -----------------------------------------------------------------------
  P. Wieser - Created on 2015, may 24th
-             Last updated on 2015, june 17th.
+             Last updated on 2017, apr. 29th
