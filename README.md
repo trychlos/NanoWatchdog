@@ -74,8 +74,7 @@
  through an USB port. It receives configuration parameters, along with
  periodic pings.
  If a ping has not been received after a configurable delay, the board
- activates the RESET motherboard feature, through an embedded micro-
- relay.
+ activates the RESET motherboard feature, through an embedded micro-relay.
 
  Due to its conception, the NanoWatchdog board hardware costs less that
  10€, and this is less than 10 times the costs of the usual branded
@@ -109,29 +108,29 @@
 
  A minimal set of commands should be sent to the NanoWatchdog board at
  PC initialization:
- - in order to set running mode:     SET TEST OFF
- - in order to set the current date: SET DATE <date>
- - in order to start the watchdog:   START.
+ - in order to set running mode:     `SET TEST OFF`
+ - in order to set the current date: `SET DATE <date>`
+ - in order to start the watchdog:   `START`.
  The nw-daemon.pl management daemon takes care of that when connecting
  to the serial bus (see below).
 
  Miscellaneous commands:
 
- HELP                 display the list of available commands
- NOOP                 no-operation command
+ `HELP`                 display the list of available commands
+ `NOOP`                 no-operation command
 
- REINIT               re-init the operation after a reset has been
+ `REINIT`               re-init the operation after a reset has been
                       initiated, stopping the watchdog and
                       re-initializing internal counters; this is rather
                       used while in development phase
 
  Watchdog management:
 
- START                start the watchdog
- STOP                 stop the watchdog
- STATUS               display the current watchdog status, along with
+ `START`                start the watchdog
+ `STOP`                 stop the watchdog
+ `STATUS`               display the current watchdog status, along with
                       the last stored reset event
- REBOOT <reason>      a command to unconditionnally reset the PC;
+ `REBOOT <reason>`      a command to unconditionnally reset the PC;
                       the reason will be stored in the reset event;
                       externally provided reason codes must fit in the
                       [16..127] range.
