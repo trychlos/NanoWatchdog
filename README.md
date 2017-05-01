@@ -281,7 +281,7 @@
  codes:
 
  reason code  | parameter
- -----------  | ---------------
+ -----------  | ---------
           16  | max-load-1
           17  | max-load-5
           18  | max-load-15
