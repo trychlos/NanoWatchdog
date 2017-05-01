@@ -3,19 +3,19 @@
  Summary
  =======
  
-   NanoWatchdog
-     What is it
-     Differences against the standard Linux watchdog daemon
-   The Arduino Nano board
-     How it works
-     Available commands
-     Acknowledging the reset events
-   The watchdog management daemon
-     Running
-     Available commands
-     Reset reason codes
-   The client
-   References
+   1. NanoWatchdog
+      1. What is it
+      1. Differences against the standard Linux watchdog daemon
+   1. The Arduino Nano board
+      1. How it works
+      1. Available commands
+      1. Acknowledging the reset events
+   1. The watchdog management daemon
+      1. Running
+      1. Available commands
+      1. Reset reason codes
+   1. The client
+   1. References
 
 -----------------------------------------------------------------------
  NanoWatchdog
