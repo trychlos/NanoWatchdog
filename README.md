@@ -49,34 +49,34 @@
  NanoWatchdog project is so built around:
  - an Arduino Nano board, which embeds the NanoWatchdog program,
  - a Perl daemon which checks for various conditions and periodically
-   ping the board,
+   pings the board,
  - a Perl client which is able to communicate with the board and the
    daemon.
 
  Differences against the standard Linux watchdog daemon
  ------------------------------------------------------
 
- NanoWatchdog                        Linux watchdog daemon
- ----------------------------------  ----------------------------------
- May be started through serial USB   Is started at up time
- transmitted command
+ NanoWatchdog                        | Linux watchdog daemon
+ ----------------------------------  | ----------------------------------
+ May be started through serial USB   | Is started at up time
+ transmitted command                 |
 
- May be stopped through serial USB   No (simple) stop interface
- transmitted command
+ May be stopped through serial USB   | No (simple) stop interface
+ transmitted command                 |
 
- Hardware is fully PC independant    Relies on the /dev/watchdog kernel
-                                     device
+ Hardware is fully PC independant    | Relies on the /dev/watchdog kernel
+                                     | device
 
- Reset the PC by activating the      Soft reboot the PC by terminating the
- RESET motherboard pins              running processes, unmounting file
-                                     systems, etc.
+ Reset the PC by activating the      | Soft reboot the PC by terminating the
+ RESET motherboard pins              | running processes, unmounting file
+                                     | systems, etc.
 
- Defines a small set of PC checks    Has defined a full battery of
-                                     configurable tests
+ Defines a small set of PC checks    | Has defined a full battery of
+                                     | configurable tests
 
- Is able to display its status       No status
+ Is able to display its status       | No status
 
- Store the last reset events         No history
+ Store the last reset events         | No history
 
 -----------------------------------------------------------------------
  The Arduino Nano board
