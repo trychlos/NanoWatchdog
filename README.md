@@ -114,9 +114,10 @@
  The nw-daemon.pl management daemon takes care of that when connecting
  to the serial bus (see below).
 
- Miscellaneous commands:
+ ### Miscellaneous commands:
 
  `HELP`                 display the list of available commands
+
  `NOOP`                 no-operation command
 
  `REINIT`               re-init the operation after a reset has been
@@ -124,42 +125,45 @@
                       re-initializing internal counters; this is rather
                       used while in development phase
 
- Watchdog management:
+ ### Watchdog management:
 
  `START`                start the watchdog
+
  `STOP`                 stop the watchdog
+
  `STATUS`               display the current watchdog status, along with
                       the last stored reset event
+
  `REBOOT <reason>`      a command to unconditionnally reset the PC;
                       the reason will be stored in the reset event;
                       externally provided reason codes must fit in the
                       [16..127] range.
 
- EEPROM management
+ ### EEPROM management
 
- EEPROM INIT          initialize the EEPROM content, writing a first
+ `EEPROM INIT`          initialize the EEPROM content, writing a first
                       initialization event on top of it. This must be
                       done only once, at NanoWatchdog first run
 
- EEPROM DUMP          dump the EEPROM content
+ `EEPROM DUMP`          dump the EEPROM content
 
- Configuration
+ ### Configuration
 
- SET TEST ON|OFF      set test mode on of off
+ `SET TEST ON|OFF`      set test mode on of off.
                       In test mode (ON), the reset is not actually
                       activated nor an event is written in the EEPROM;
                       only the red LED is lighted on
 
- SET DATE <time>      set the current date as the count of seconds since
+ `SET DATE <time>`      set the current date as the count of seconds since
                       1970-01-01 (EPOCH time); this is needed in order
                       to display actual dates in STATUS output
 
- SET DELAY <number>   set the timeout delay before resetting the PC if
+ `SET DELAY <number>`   set the timeout delay before resetting the PC if
                       no ping has happened
 
- Reset events management
+ ### Reset events management
 
- ACKNOWLEDGE <index>  acknowledge the specified reset event
+ `ACKNOWLEDGE <index>`  acknowledge the specified reset event
                       index starts at zero (the most recent event), and
                       is valid up to 9, as only the 10 last events are
                       stored in EEPROM.
