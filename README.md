@@ -59,17 +59,11 @@
  NanoWatchdog                        | Linux watchdog daemon
  ----------------------------------  | ----------------------------------
  May be started through serial USB transmitted command | Is started at up time
-
  May be stopped through serial USB transmitted command | No (simple) stop interface
-
  Hardware is fully PC independant    | Relies on the /dev/watchdog kernel device
-
  Reset the PC by activating the RESET motherboard pins | Soft reboot the PC by terminating the running processes, unmounting file systems, etc.
-
  Defines a small set of PC checks    | Has defined a full battery of configurable tests
-
  Is able to display its status       | No status
-
  Store the last reset events         | No history
 
 -----------------------------------------------------------------------
