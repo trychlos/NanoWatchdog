@@ -171,8 +171,9 @@
  Acknowledging the reset events
  ------------------------------
  Each reset event holds an 'acknowledgment' bit. This bit is cleared
- when the reset event occurs, and can only be set via the 'ACKNOWLEDGE'
+ when the reset event occurs, and can only be set via the `ACKNOWLEDGE`
  command.
+
  This acknowledgment bit has no effect on the NanoWatchdog behavior by
  itself. It is only present to make easier the history management of
  the reset events.
@@ -237,17 +238,18 @@
 
  When run without any command-line options, the program only displays
  its help message, and gracefully exit. So at least one option (e.g.
- '--nohelp') must be specified.
+ `--nohelp`) must be specified.
 
  The NanoWatchdog management daemon defaults to be configured through
- the /etc/nanowatchdog.conf configuration file.
- It is also able to interpret the /etc/watchdog.conf configuration file
+ the `/etc/nanowatchdog.conf` configuration file.
+
+ It is also able to interpret the `/etc/watchdog.conf` configuration file
  if asked for (see include directive).
 
  See doc/Parameters.ods sheet for a full detail of command-line options,
  known configuration parameters, and management daemon commands.
 
- See also the output of 'nw-daemon.pl -help' command for a list of
+ See also the output of `nw-daemon.pl -help` command for a list of
  command-line options and their default values.
 
  Available commands
@@ -257,20 +259,20 @@
 
  It recognizes following commands:
 
- DUMP OPTS      dump on standard output the current value of all
+ `DUMP OPTS`      dump on standard output the current value of all
                 command-line options
 
- DUMP PARMS     dump on standard output the current value of all
+ `DUMP PARMS`     dump on standard output the current value of all
                 configuration parameters
 
- GET <parm>     display on standard output the value of the 'parm'
+ `GET <parm>`     display on standard output the value of the 'parm'
                 configuration parameter or command-line option.
                 e.g. GET admin
 
- PING ON|OFF    restore (ON) on inhibit (OFF) the periodic ping of the
+ `PING ON|OFF`    restore (ON) on inhibit (OFF) the periodic ping of the
                 NanoWatchdog board
 
- QUIT           gracefully terminates the daemon
+ `QUIT`           gracefully terminates the daemon
 
  Reset reason codes
  ------------------
@@ -278,16 +280,16 @@
  The NanoWatchdog management daemon makes use of following reason
  codes:
 
- reason code  parameter
+ reason code  | parameter
  -----------  ---------------
-          16  max-load-1
-          17  max-load-5
-          18  max-load-15
-          19  min-memory
-          20  max-temperature
-          21  pidfile
-          22  ping
-          23  interface
+          16  | max-load-1
+          17  | max-load-5
+          18  | max-load-15
+          19  | min-memory
+          20  | max-temperature
+          21  | pidfile
+          22  | ping
+          23  | interface
 
 -----------------------------------------------------------------------
  The client
@@ -311,9 +313,13 @@
  ==========
 
  [1] https://www.kernel.org/doc/Documentation/watchdog/watchdog-api.txt
+
  [2] http://linux.die.net/man/8/watchdog
+
  [3] http://linux.die.net/man/5/watchdog.conf
+
  [4] https://github.com/trychlos/serialcs
+
  [5] http://www.berkprod.com/Other_Pages/Price_Ordering.aspx
 
 -----------------------------------------------------------------------
