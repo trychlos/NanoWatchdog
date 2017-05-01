@@ -280,16 +280,16 @@
  The NanoWatchdog management daemon makes use of following reason
  codes:
 
- reason code  | parameter
- -----------  | ---------
-          16  | max-load-1
-          17  | max-load-5
-          18  | max-load-15
-          19  | min-memory
-          20  | max-temperature
-          21  | pidfile
-          22  | ping
-          23  | interface
+ reason code | parameter
+ ----------- | ---------
+ 16          | max-load-1
+ 17          | max-load-5
+ 18          | max-load-15
+ 19          | min-memory
+ 20          | max-temperature
+ 21          | pidfile
+ 22          | ping
+ 23          | interface
 
 -----------------------------------------------------------------------
  The client
