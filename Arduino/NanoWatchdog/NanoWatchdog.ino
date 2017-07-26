@@ -378,7 +378,7 @@ bool cmdReinit()
  * - DATE <date>
  *   the epoch time as a time_t
  *   default = 0
- * - INTERVAL <interval>
+ * - DELAY <delay>
  *   the delay is seconds since the last ping at which the reset is launched
  *   value = 1..32767
  *   default = 60
