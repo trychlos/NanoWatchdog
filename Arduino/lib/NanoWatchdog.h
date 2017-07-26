@@ -37,7 +37,7 @@
 static const int nwVersionSize = 32;
 /*                                             0        1         2         3  */
 /*                                             1234567890123456789012345678901 */
-static const PROGMEM char nwVersionString[] = "NanoWatchdog v2015.3";
+static const PROGMEM char nwVersionString[] = "NanoWatchdog v11.2017";
 
 #define LED_BLINK	300					/* elapsed milliseconds on/off for a led blink */
 
