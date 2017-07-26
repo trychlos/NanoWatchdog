@@ -1,6 +1,6 @@
 # @(#) NanoWatchdog
 #
-# Copyright (C) 2015 Pierre Wieser (see AUTHORS)
+# Copyright (C) 2015,2016,2017 Pierre Wieser (see AUTHORS)
 #
 # NanoWatchdog is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as

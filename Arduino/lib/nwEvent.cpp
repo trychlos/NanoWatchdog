@@ -2,7 +2,7 @@
  * NanoWatchdog
  * An Arduino Nano based PC watchdog.
  *
- * Copyright (C) 2015 Pierre Wieser <pwieser@trychlos.org>
+ * Copyright (C) 2015,2016,2017 Pierre Wieser <pwieser@trychlos.org>
  *
  * NanoWatchdog is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
