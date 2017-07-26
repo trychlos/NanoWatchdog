@@ -38,7 +38,7 @@ use Sys::Syslog qw(:standard :macros);
 use constant { true => 1, false => 0 };
 
 my $me = basename( $0 );				# program base name
-my $my_version = "10.2016";
+my $my_version = "11.2017";
 my $errs = 0;							# exit code
 my $nbopts = $#ARGV;					# command-line args count
 
@@ -952,7 +952,7 @@ sub msg_format( $ ){
 # ---------------------------------------------------------------------
 sub msg_version(){
 	print " NanoWatchdog v${my_version}
- Copyright (C) 2015,2016, Pierre Wieser <pwieser\@trychlos.org>
+ Copyright (C) 2015,2016,2017 Pierre Wieser <pwieser\@trychlos.org>
 ";
 }
 
@@ -1610,7 +1610,7 @@ sub start_watchdog(){
 		send_serial( $command );
 	
 		# set the reboot interval
-		$command = "SET INTERVAL ".$parms->{'delay'}{'value'};
+		$command = "SET DELAY ".$parms->{'delay'}{'value'};
 		send_serial( $command );
 		
 		# last start the watchdog
