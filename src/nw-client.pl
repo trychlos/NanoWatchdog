@@ -23,7 +23,7 @@ use Getopt::Long;
 use IO::Socket::INET;
 
 my $me = basename( $0 );
-my $my_version = "10.2016";
+my $my_version = "11.2017";
 use constant { true => 1, false => 0 };
  
 # auto-flush on socket
@@ -63,7 +63,7 @@ sub msg_help(){
 # ---------------------------------------------------------------------
 sub msg_version(){
 	print " NanoWatchdog v${my_version}
- Copyright (C) 2015, Pierre Wieser <pwieser\@trychlos.org>
+ Copyright (C) 2015,2016,2017 Pierre Wieser <pwieser\@trychlos.org>
 ";
 }
 
