@@ -23,7 +23,7 @@
 
  - INSTALL: update to have ad-hoc installation instructions.
  - README: have an empty file so that autoreconf is happy.
- - Arduino/NanoWatchdog.ino: update comment.
+ - Arduino/NanoWatchdog.ino: update SET DELAY comment.
  - src/nw-daemon.pl: obsolete SET INTERVAL command.
 
 -----------------------------------------------------------------------
