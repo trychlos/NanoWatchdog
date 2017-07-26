@@ -3,6 +3,7 @@
  Summary
  =======
  
+   Version 11.2017
    Version 10.2016
    Version 9.2016
    Version 8.2016
@@ -15,10 +16,24 @@
    Version 2015.1
 
 -----------------------------------------------------------------------
+ Version 11.2017
+ ===============
+
+ Release date:
+
+ - INSTALL: update to have ad-hoc installation instructions.
+ - README: have an empty file so that autoreconf is happy.
+ - Arduino/NanoWatchdog.ino: update comment.
+ - src/nw-daemon.pl: obsolete SET INTERVAL command.
+
+-----------------------------------------------------------------------
  Version 10.2016
  ===============
 
- Release date: 
+ Release date: 2017- 5- 1
+
+ Please note that this version number is wrong (should be 10.2017),
+ while it is rightly tagged as '10.2017' in Github.
 
 -----------------------------------------------------------------------
  Version 9.2016

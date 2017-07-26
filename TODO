@@ -104,7 +104,7 @@
                 command interface doesn't update corresponding configu-
                 ration parameter (if any)
      2016- 9- 8 cancelled: the command interface of the daemon does not
-                let the user update the configuration 
+                let the user update the configuration.
 
   21 2015- 7- 9 configure 'from' field of the mail
                 (do not only rely on hostname)

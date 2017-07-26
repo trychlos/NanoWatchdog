@@ -907,7 +907,7 @@ sub is_running(){
 }
 
 # ---------------------------------------------------------------------
-# Compute the default value of max-load-5 given max-load-1 
+# Compute the default value of max-load-5 given max-load-1
 # (E): 1. a ref to the global configuration parameters hash
 #      2. the parameter specified in the definition which is expected to
 #         be a ref to an array of values
@@ -920,7 +920,7 @@ sub max_load_5_def( $$ ){
 }
 
 # ---------------------------------------------------------------------
-# Compute the default value of max-load-15 given max-load-1 
+# Compute the default value of max-load-15 given max-load-1
 sub max_load_15_def( $$ ){
 	my $local_parms = shift;
 	my $load_key = ${$_[0]}[0];
@@ -930,8 +930,8 @@ sub max_load_15_def( $$ ){
 }
 
 # ---------------------------------------------------------------------
-# Display the specified message, either on stdout or in syslog, 
-# depending if we are running in the foreground or in the background 
+# Display the specified message, either on stdout or in syslog,
+# depending if we are running in the foreground or in the background
 sub msg( $ ){
 	my $str = shift;
 	if( $parms->{'daemon'}{'value'} && $background ){
@@ -942,7 +942,7 @@ sub msg( $ ){
 }
 
 # ---------------------------------------------------------------------
-# standard format the message 
+# standard format the message
 sub msg_format( $ ){
 	my $instr = shift;
 	my $outstr = "[${me}] ${instr}";
@@ -969,9 +969,9 @@ sub open_socket( $$ ){
 		Proto => 'tcp',
 		Listen => 5,
 		Reuse => 1,
-		Timeout => 0 ) 
+		Timeout => 0 )
 			or die "cannot create socket on $local_ip:$local_port: $!\n";
-	fcntl( $socket, F_GETFL, O_NONBLOCK ) 
+	fcntl( $socket, F_GETFL, O_NONBLOCK )
 			or die "cannot set non-blocking flag for the TCP socket: $!\n";
 	msg( "server waiting for client connection on $local_ip:$local_port" )
 			if $$opt_verbose & LOG_CLIENT_DEBUG1;
@@ -1074,7 +1074,7 @@ sub read_board_command( $ ){
 	    if( $parms->{'serial'}{'value'} ){
 			$answer = send_serial( $data );
 	    } else {
-	    	$answer = msg_format( "${data}" );
+			$answer = msg_format( "${data}" );
 	    }
 	    write_answer( $client, $answer );
     }
@@ -1191,7 +1191,7 @@ sub send_serial( $ ){
 	msg( "sending command to ".$parms->{'device'}{'value'}.": '$command'" )
 			if $$opt_verbose & LOG_BOARD_DEBUG2;
     if( $parms->{'serial'}{'value'} ){
-    	# send the command
+		# send the command
 	    my $out_count = $serial->write( "$command\n" );
 	    msg( "${out_count} chars written to ".$parms->{'device'}{'value'} )
 				if $$opt_verbose & LOG_BOARD_DEBUG2;
@@ -1225,28 +1225,28 @@ sub check_interface( $ ){
     my $tick = shift;
     my $reboot = false;
     if( !@{$parms->{'interface'}{'value'}} ){
-    	msg( "interface(s) check is not enabled" )
-    			if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
+		msg( "interface(s) check is not enabled" )
+			if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
     } else {
 	    foreach( @{$parms->{'interface'}{'value'}} ){
-	    	if( !$reboot ){
-		    	my $ifconfig = `ifconfig $_ 2>&1`;
-		    	my $rx = 0;
-		    	my $tx = 0;
-		    	if( $ifconfig =~ m/.*RX packets ([0-9]+).*/ms ){
-		    		$rx = $1;
-		    	}
-		    	if( $ifconfig =~ m/.*TX packets ([0-9]+).*/ms ){
-		    		$tx = $1;
-		    	}
-	    		$reboot = ( $rx+$tx == 0 );
-	    		msg( "interface=$_, rx=$rx, tx=$tx" )
-	    			if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
-	    	}
-	    }
-	    $reason_code = 23 if $reboot;
-    }
-    return( $reboot );
+			if( !$reboot ){
+				my $ifconfig = `ifconfig $_ 2>&1`;
+				my $rx = 0;
+				my $tx = 0;
+				if( $ifconfig =~ m/.*RX packets ([0-9]+).*/ms ){
+					$rx = $1;
+				}
+				if( $ifconfig =~ m/.*TX packets ([0-9]+).*/ms ){
+					$tx = $1;
+				}
+				$reboot = ( $rx+$tx == 0 );
+				msg( "interface=$_, rx=$rx, tx=$tx" )
+					if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
+			}
+		}
+		$reason_code = 23 if $reboot;
+	}
+	return( $reboot );
 }
 
 # ---------------------------------------------------------------------
@@ -1267,38 +1267,38 @@ sub check_loadavg( $ ){
 
 	    open my $fh, "/proc/loadavg";
 	    if( defined( $fh )){
-	    	my $line = <$fh>;
-	    	close( $fh );
-	    	chomp $line;
-	    	my ( $avg1, $avg5, $avg10, $processes, $lastpid ) = split( / /, $line );
+			my $line = <$fh>;
+			close( $fh );
+			chomp $line;
+			my ( $avg1, $avg5, $avg10, $processes, $lastpid ) = split( / /, $line );
 			if( defined( $parms->{'maxload1'}{'value'} ) &&
 					$parms->{'maxload1'}{'value'} > 0 &&
 					$avg1 > $parms->{'maxload1'}{'value'} ){
-	    		$reason_code = 16;
-	    		$reboot = true;
+				$reason_code = 16;
+				$reboot = true;
 
-	    	} elsif( defined( $parms->{'maxload5'}{'value'} ) &&
-	    			$parms->{'maxload5'}{'value'} > 0 &&
-	    			$avg5 > $parms->{'maxload5'}{'value'} ){
-	    		$reason_code = 17;
-	    		$reboot = true;
+			} elsif( defined( $parms->{'maxload5'}{'value'} ) &&
+					$parms->{'maxload5'}{'value'} > 0 &&
+					$avg5 > $parms->{'maxload5'}{'value'} ){
+				$reason_code = 17;
+				$reboot = true;
 
-	    	} elsif( defined( $parms->{'maxload15'}{'value'} ) &&
-	    			$parms->{'maxload15'}{'value'} > 0 &&
-	    			$avg10 > $parms->{'maxload15'}{'value'} ){
-	    		$reason_code = 18;
-	    		$reboot = true;
-	    	}
-	    	msg( "parm:max-load-1=".config_str_value( $parms->{'maxload1'} )
-	    			.", avg1=$avg1, "
-	    			."parm:max-load-5=".config_str_value( $parms->{'maxload5'} )
-	    			.", avg5=$avg5, "
-	    			."parm:max-load-15=".config_str_value( $parms->{'maxload15'} )
-	    			.", avg10=$avg10, "
-	    			."processes=${processes}, lastpid=${lastpid}" )
+			} elsif( defined( $parms->{'maxload15'}{'value'} ) &&
+					$parms->{'maxload15'}{'value'} > 0 &&
+					$avg10 > $parms->{'maxload15'}{'value'} ){
+				$reason_code = 18;
+				$reboot = true;
+			}
+			msg( "parm:max-load-1=".config_str_value( $parms->{'maxload1'} )
+					.", avg1=$avg1, "
+					."parm:max-load-5=".config_str_value( $parms->{'maxload5'} )
+					.", avg5=$avg5, "
+					."parm:max-load-15=".config_str_value( $parms->{'maxload15'} )
+					.", avg10=$avg10, "
+					."processes=${processes}, lastpid=${lastpid}" )
 			    			if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
 	    } else {
-	    	msg( "unable to open /proc/loadavg: $!" );
+			msg( "unable to open /proc/loadavg: $!" );
 	    }
     } else {
     	msg( "load average check is not enabled" )
@@ -1318,27 +1318,27 @@ sub check_memory( $ ){
     if( $parms->{'memory'}{'value'} > 0 ){
 	    open my $fh, "/proc/meminfo";
 	    if( defined( $fh )){
-	    	my $line;
-	    	my $swap_free = 0;
-	    	while( $line = <$fh> ){
-	    		chomp $line;
-	    		if( $line =~ /SwapFree:/ ){
-	    			my ( $label, $count, $unit ) = split( /\s+/, $line );
-	    			#msg( "label=${label} count=${count} unit=${unit}" );
-	    			$swap_free = $count / 4;
-	    			last;
-	    		}
-	    	}
-	    	close( $fh );
-	    	$reboot = true if $swap_free < $parms->{'memory'}{'value'};
-		    $reason_code = 19 if $reboot;
-	    	msg( " parm:min-memory=".$parms->{'memory'}{'value'}.", swap_free=$swap_free" )
-	    			if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
+			my $line;
+			my $swap_free = 0;
+			while( $line = <$fh> ){
+				chomp $line;
+				if( $line =~ /SwapFree:/ ){
+					my ( $label, $count, $unit ) = split( /\s+/, $line );
+					#msg( "label=${label} count=${count} unit=${unit}" );
+					$swap_free = $count / 4;
+					last;
+				}
+			}
+			close( $fh );
+			$reboot = true if $swap_free < $parms->{'memory'}{'value'};
+			$reason_code = 19 if $reboot;
+			msg( " parm:min-memory=".$parms->{'memory'}{'value'}.", swap_free=$swap_free" )
+					if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
 	    } else {
-	    	msg( "unable to open /proc/meminfo: $!" );
+			msg( "unable to open /proc/meminfo: $!" );
 	    }
     } else {
-    	msg( "virtual memory check is not enabled" )
+		msg( "virtual memory check is not enabled" )
 				if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
     }
     return( $reboot );
@@ -1353,26 +1353,26 @@ sub check_pidfile( $ ){
     my $tick = shift;
     my $reboot = false;
     if( !@{$parms->{'pidfile'}{'value'}} ){
-    	msg( "pid file(s) check is not enabled" )
-    			if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
+		msg( "pid file(s) check is not enabled" )
+				if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
     } else {
 	    foreach( @{$parms->{'pidfile'}{'value'}} ){
-	    	if( !$reboot ){
-		    	if( open( my $fh, '<', $_ )){
-		    		my $pid = <$fh>;
-		    		close $fh;
-		    		chomp $pid;
-		    		# this only works for process with same UID
-		    		#my $exists = kill 0, $pid;
-		    		my $exists = ( system( "ps --pid $pid 1>/dev/null 2>&1" ) == 0 );
-		    		#print "pid=$pid, exists=".( $exists ? "true":"false" )."\n";
-		    		$reboot = !$exists;
-		    		msg( "pidfile=".$_.", pid=$pid, exists=".( $exists ? "true":"false" ))
-		    			if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
-		    	} else {
-		    		msg( "warning: unable to open ".$_." for reading: $!" );
-		    	}
-	    	}
+			if( !$reboot ){
+				if( open( my $fh, '<', $_ )){
+					my $pid = <$fh>;
+					close $fh;
+					chomp $pid;
+					# this only works for process with same UID
+					#my $exists = kill 0, $pid;
+					my $exists = ( system( "ps --pid $pid 1>/dev/null 2>&1" ) == 0 );
+					#print "pid=$pid, exists=".( $exists ? "true":"false" )."\n";
+					$reboot = !$exists;
+					msg( "pidfile=".$_.", pid=$pid, exists=".( $exists ? "true":"false" ))
+						if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
+				} else {
+					msg( "warning: unable to open ".$_." for reading: $!" );
+				}
+			}
 	    }
 	    $reason_code = 21 if $reboot;
     }
@@ -1386,16 +1386,16 @@ sub check_ping( $ ){
     my $tick = shift;
     my $reboot = false;
     if( !@{$parms->{'ping'}{'value'}} ){
-    	msg( "ping(s) check is not enabled" )
-    			if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
+		msg( "ping(s) check is not enabled" )
+				if ( $$opt_verbose & LOG_LOOP_DEBUG1 ) && $tick >= $parms->{'logtick'}{'value'};
     } else {
 	    foreach( @{$parms->{'ping'}{'value'}} ){
-	    	if( !$reboot ){
-		    	my $alive = ( system( "ping -c1 $_ 1>/dev/null 2>&1" ) == 0 );
-	    		$reboot = !$alive;
-	    		msg( "ipv4=$_, alive=".( $alive ? "true":"false" ))
-	    			if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
-	    	}
+			if( !$reboot ){
+				my $alive = ( system( "ping -c1 $_ 1>/dev/null 2>&1" ) == 0 );
+				$reboot = !$alive;
+				msg( "ipv4=$_, alive=".( $alive ? "true":"false" ))
+					if $reboot || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
+			}
 	    }
 	    $reason_code = 22 if $reboot;
     }
@@ -1408,7 +1408,7 @@ sub check_ping( $ ){
 # /sys/class/thermal/thermal_zone1/temp: 41000
 # returns: true if the system must be rebooted
 # NB: there is no way to disable the temperature check: it is always
-#     enabled 
+#     enabled
 sub check_temperature( $ ){
     my $tick = shift;
     my $reboot = false;
@@ -1425,16 +1425,16 @@ sub check_temperature_wanted( $$ ){
 	if( -r $ftemp ){
 	    open my ( $fh ), $ftemp;
 	    if( defined( $fh )){
-	    	my $line = <$fh>;
-	    	close( $fh );
-	    	chomp $line;
-	    	$line /= 1000;
-	    	$reboot_local = ( $line > $parms->{'temperature'}{'value'} );
-	    	msg( "parm:max-temperature=".$parms->{'temperature'}{'value'}.", $ftemp:temperature=${line}" ) 
-    			if $reboot_local || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
-	    	$$reboot_ref |= $reboot_local;
+			my $line = <$fh>;
+			close( $fh );
+			chomp $line;
+			$line /= 1000;
+			$reboot_local = ( $line > $parms->{'temperature'}{'value'} );
+			msg( "parm:max-temperature=".$parms->{'temperature'}{'value'}.", $ftemp:temperature=${line}" ) 
+				if $reboot_local || (( $$opt_verbose & LOG_LOOP_DEBUG2 ) && $tick >= $parms->{'logtick'}{'value'} );
+			$$reboot_ref |= $reboot_local;
 	    } else {
-	    	msg( "unable to open $ftemp: $!" );
+			msg( "unable to open $ftemp: $!" );
 	    }
 	}
 }
@@ -1477,7 +1477,7 @@ sub run_server(){
 	$daemon_socket = open_socket( $parms->{'listener'}{'value'}, $parms->{'daemonport'}{'value'} );
 	$serial = open_serial() if $parms->{'serial'}{'value'};
 	wait_for_watchdog_init() or die "unable to initialized NanoWatchdog board\n";
-	
+
 	# first start the NanoWatchdog board
 	start_watchdog();
 	# check status
@@ -1489,7 +1489,7 @@ sub run_server(){
 #  acknowledged: no";
 	write_status( $board_status );
 	send_boot_mail( $board_status );
-	
+
 	my $tick = 0;
 	my $subtick = $parms->{'interval'}{'value'};	# do the first check right now
 
@@ -1503,7 +1503,7 @@ sub run_server(){
 			$subtick = 0;
 			$tick += 1;
 			send_serial( "PING" ) if $parms->{'nwping'}{'value'};
-	
+
 			# http://linux.die.net/man/8/watchdog
 			# The watchdog daemon does several tests to check the system
 			# status:
@@ -1523,7 +1523,7 @@ sub run_server(){
 			# If any of these checks fail watchdog will cause a shutdown.
 			# Should any of these tests except the user defined binary last longer
 			# than one minute the machine will be rebooted, too.
-	
+
 			if( check_memory( $tick ) ||
 				check_loadavg( $tick ) ||
 				check_temperature( $tick ) ||
@@ -1599,20 +1599,20 @@ sub start_watchdog(){
     if( $parms->{'serial'}{'value'} ){
 		msg( "starting NanoWatchdog board..." ) if $$opt_verbose & LOG_INFO_START;
 		my $command;
-	
+
 		# set whether we are in test mode
 		$command = "SET TEST ";
 		$command .= $parms->{'action'}{'value'} ? "OFF" : "ON";
 		send_serial( $command );
-	
+
 		# set the current date
 		$command = "SET DATE ".time();
 		send_serial( $command );
-	
+
 		# set the reboot interval
 		$command = "SET DELAY ".$parms->{'delay'}{'value'};
 		send_serial( $command );
-		
+
 		# last start the watchdog
 		send_serial( "START" );
     }

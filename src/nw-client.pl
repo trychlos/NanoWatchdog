@@ -25,7 +25,7 @@ use IO::Socket::INET;
 my $me = basename( $0 );
 my $my_version = "11.2017";
 use constant { true => 1, false => 0 };
- 
+
 # auto-flush on socket
 $| = 1;
 
@@ -79,7 +79,7 @@ sub open_socket(){
 		Proto => 'tcp' );
 	die "cannot connect to the server $!\n" unless $socket;
 	print "connected to the server\n" if $opt_verbose;
-	
+
 	return( $socket );
 }
 
@@ -94,7 +94,7 @@ if( !GetOptions(
 	"listen=s"		=> \$opt_listen_ip,
 	"port=i"		=> \$opt_listen_port,
 	"command=s"		=> \$opt_command )){
-		
+
 		print "try '${0} --help' to get full usage syntax\n";
 		exit( 1 );
 }
@@ -114,17 +114,17 @@ if( $opt_version ){
 
 # create a connecting socket
 my $socket = open_socket();
- 
+
 # send the command to the server
 my $size = $socket->send( $opt_command );
 print "sent data of length $size\n" if $opt_verbose;
- 
+
 # notify server that request has been sent
 shutdown( $socket, true );
- 
+
 # receive a response of up to 4096 characters from server
 my $response = "";
 $socket->recv( $response, 4096 );
 print "$response";
- 
+
 $socket->close();

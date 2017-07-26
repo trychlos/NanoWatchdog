@@ -2,7 +2,7 @@
 
  Summary
  =======
- 
+
    1. NanoWatchdog
       1. What is it
       1. Differences against the standard Linux watchdog daemon
@@ -39,7 +39,7 @@
  NanoWatchdog is extended in order to provide most of watchdog features,
  so that the Arduino Nano-based board + its associated Perl programs may
  not only provide a full replacement for almost any watchdog device
- [2,5], but also hopefully add some new nice features... 
+ [2,5], but also hopefully add some new nice features...
 
  As extended features, The NanoWatchdog package also provides:
  - explicit start and stop of the watchdog
@@ -295,11 +295,11 @@
  The client
  ==========
 
- The client is a simple command-line application which takes commands 
+ The client is a simple command-line application which takes commands
  from its input, send them to the server, and displays on its output
  all that is sent back by the server.
  This is more or less roughly the same client than those from SerialCS.
- 
+
  This NanoWatchdog client command-line program is provided only as a
  convenience for the user. But it doesn't embed any particularity
  related to the watchdog, nor anything which would be tied to this
